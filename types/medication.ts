@@ -7,6 +7,7 @@ export interface MedicationListItem {
   totalQuantity: number;
   inStock: boolean;
   minPrice: number | null;
+  needsPrescription?: boolean;
 }
 
 export type AvailabilityFilter = "all" | "available" | "unavailable";

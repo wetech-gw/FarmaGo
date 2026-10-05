@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { formatDistance, googleMapsUrl } from "@/lib/geo";
+import MedicationCard from "./MedicationCard";
 import { medicationPlaceholder, pharmacyPlaceholder } from "@/lib/placeholders";
 import type { PharmacySpot } from "@/types/pharmacy";
 
@@ -11,6 +12,8 @@ interface Props {
   medQuery: string;
   onMedQueryChange: (value: string) => void;
   onClose: () => void;
+  medsLayout?: "list" | "grid";
+  showFullPageLink?: boolean;
 }
 
 export default function PharmacyDetail({
@@ -19,6 +22,8 @@ export default function PharmacyDetail({
   medQuery,
   onMedQueryChange,
   onClose,
+  medsLayout = "list",
+  showFullPageLink = true,
 }: Props) {
   const term = medQuery.trim().toLowerCase();
   const meds = spot.medications.filter(
@@ -173,6 +178,26 @@ export default function PharmacyDetail({
               Nenhum medicamento corresponde a “{medQuery}”.
             </p>
           ) : (
+            medsLayout === "grid" ? (
+              <div className="med-grid px-med-grid--small">
+                {meds.map((med) => (
+                  <MedicationCard
+                    key={med.id}
+                    showAvailability={false}
+                    med={{
+                      id: med.id,
+                      name: med.name,
+                      dosage: med.dosage,
+                      image: med.image,
+                      totalQuantity: med.quantity,
+                      inStock: med.quantity > 0,
+                      minPrice: med.price,
+                      needsPrescription: med.needsPrescription,
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
             <ul className="px-med-list">
               {meds.map((med) => (
                 <li key={med.id} className="px-med-item">
@@ -196,20 +221,23 @@ export default function PharmacyDetail({
                     {med.quantity}
                   </span>
                   <span className="px-med-price fw-bold" style={{ color: "#0f8a0e" }}>
-                    {med.price.toFixed(2)}
+                    {med.price.toFixed(0)} FCFA
                   </span>
                 </li>
               ))}
             </ul>
-          )}
+            )
+            )}
         </div>
 
+        {showFullPageLink && (
         <div className="px-detail-foot">
           <Link href={`/pharmacies/${spot.id}`} className="px-detail-link">
             Ver página completa da farmácia
             <i className="bi bi-arrow-right" aria-hidden="true"></i>
           </Link>
         </div>
+        )}
         </div>
       </div>
     </div>

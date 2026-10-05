@@ -18,6 +18,7 @@ interface UserLocation {
 
 interface Props {
   spots: PharmacySpot[];
+  initialFilter?: SpotFilter;
 }
 
 const FILTERS: { value: SpotFilter; label: string; icon: string }[] = [
@@ -34,9 +35,9 @@ function normalize(value: string): string {
     .toLowerCase();
 }
 
-export default function PharmacyExplorer({ spots }: Props) {
+export default function PharmacyExplorer({ spots, initialFilter = "open" }: Props) {
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<SpotFilter>("open");
+  const [filter, setFilter] = useState<SpotFilter>(initialFilter);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [medQuery, setMedQuery] = useState("");
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);

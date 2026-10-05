@@ -46,8 +46,7 @@ export default function DashboardSidebar({
     >
       <div className="d-flex align-items-center gap-2 mb-4 px-2 pt-2">
         <Link href="/" className="text-decoration-none d-flex align-items-center gap-2">
-          <span className="fw-bold fs-4" style={{ color: "#10b981" }}>FarmaGo</span>
-          <i className="bi bi-capsule-capsule fs-4" style={{ color: "#10b981" }}></i>
+          <img src="/images/Logo.png" alt="FarmaGo" style={{ height: "50px", width: "auto" }} />
         </Link>
       </div>
 

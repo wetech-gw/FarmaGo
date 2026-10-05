@@ -31,7 +31,7 @@ export default async function GuardDetailPage({ params }: Props) {
     <>
       <Navbar />
       <main className="bg-light min-vh-100 py-5">
-        <div className="container" style={{ maxWidth: "720px" }}>
+        <div className="container" style={{ maxWidth: "1100px" }}>
           <div className="bg-white border rounded-4 shadow-sm overflow-hidden">
             <PharmacyDetailPageView spot={pharmacy} />
           </div>

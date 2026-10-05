@@ -9,5 +9,5 @@ export const metadata = {
 };
 
 export default function PharmaciesPage() {
-  return <PharmacyFinder showBreadcrumb />;
+  return <PharmacyFinder showBreadcrumb showExplorer={false} />;
 }

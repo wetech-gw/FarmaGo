@@ -4,16 +4,14 @@ export default function Footer() {
   return (
     <footer className="bg-dark text-white pt-5 pb-3 font-sans" style={{ backgroundColor: "#0f1115 !important" }}>
       <div className="container">
-        
+
         {/* Bloco Superior: Logo, Descrição e Links */}
         <div className="row gy-4 border-bottom border-secondary pb-4 mb-4" style={{ borderColor: "rgba(255,255,255,0.1) !important" }}>
-          
+
           {/* Coluna 1: Logo e Descrição */}
           <div className="col-12 col-lg-6">
             <div className="d-flex align-items-center gap-2 mb-3">
-              <span className="text-success fw-bold fs-3">FarmaGo</span>
-              {/* Ícone de pílula duplo simulado em verde */}
-              <i className="bi bi-capsule-capsule text-success fs-3"></i>
+              <img src="/images/Logo.png" alt="FarmaGo" style={{ height: "50px", width: "auto" }} />
             </div>
             <p className="text-secondary lh-base m-0" style={{ maxWidth: "450px", fontSize: "0.95rem" }}>
               Otimize o seu acesso a medicamentos com a nossa aplicação web.
@@ -29,7 +27,6 @@ export default function Footer() {
               <li><Link href="/medications" className="text-secondary text-decoration-none hover-success">Medicamentos</Link></li>
               <li><Link href="/pharmacies" className="text-secondary text-decoration-none hover-success">Farmácias</Link></li>
               <li><Link href="/guards" className="text-secondary text-decoration-none hover-success">Farmácias de serviço</Link></li>
-              <li><Link href="/parapharmacy" className="text-secondary text-decoration-none hover-success">Parafarmácias</Link></li>
             </ul>
           </div>
 
@@ -48,7 +45,7 @@ export default function Footer() {
 
         {/* Bloco Inferior: Telefone, Redes Sociais e Copyright */}
         <div className="row align-items-center gy-3">
-          
+
           {/* Suporte por Telefone */}
           <div className="col-12 col-md-4 text-center text-md-start">
             <p className="text-secondary small mb-1">Tem alguma dúvida? Ligue-nos 24/7.</p>

@@ -24,6 +24,7 @@ export interface StockMedication {
   quantity: number;
   expiryDate: string;
   price: number;
+  needsPrescription?: boolean;
 }
 
 export interface PharmacySpot {

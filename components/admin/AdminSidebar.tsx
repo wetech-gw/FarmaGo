@@ -51,8 +51,7 @@ export default function AdminSidebar({
 
       <div className="d-flex align-items-center gap-2 mb-5 px-2 pt-2">
         <Link href="/" className="text-decoration-none d-flex align-items-center gap-2">
-          <span className="fw-bold fs-3" style={{ color: "#10b981" }}>FarmaGo</span>
-          <i className="bi bi-capsule-capsule fs-3" style={{ color: "#10b981" }}></i>
+          <img src="/images/Logo.png" alt="FarmaGo" style={{ height: "50px", width: "auto" }} />
         </Link>
       </div>
 

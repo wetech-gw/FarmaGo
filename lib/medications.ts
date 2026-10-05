@@ -29,6 +29,7 @@ export async function getMedicationsWithAvailability(): Promise<MedicationListIt
       totalQuantity,
       inStock:  totalQuantity > 0,
       minPrice: prices.length > 0 ? Math.min(...prices) : null,
+      needsPrescription: medication.needsPrescription,
     };
   });
 }

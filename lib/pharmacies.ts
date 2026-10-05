@@ -31,6 +31,7 @@ export async function getPharmacySpot(id: number, isGuard: boolean): Promise<Pha
         quantity:   stock.quantity,
         expiryDate: stock.expiryDate.toISOString(),
         price:      Number(stock.unitPrice),
+        needsPrescription: stock.medication.needsPrescription,
       })),
   };
 }
@@ -65,6 +66,7 @@ export async function getPharmacySpots(): Promise<PharmacySpot[]> {
         quantity:   stock.quantity,
         expiryDate: stock.expiryDate.toISOString(),
         price:      Number(stock.unitPrice),
+        needsPrescription: stock.medication.needsPrescription,
       })),
   }));
 }

@@ -14,6 +14,8 @@ export default function PharmacyDetailPageView({ spot }: { spot: PharmacySpot })
       medQuery={medQuery}
       onMedQueryChange={setMedQuery}
       onClose={() => window.history.back()}
+      medsLayout="grid"
+      showFullPageLink={false}
     />
   );
 }

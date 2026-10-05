@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { loginAction, type AuthState } from "@/app/login/actions";
 
 const initialState: AuthState = { error: "" };
@@ -42,7 +43,13 @@ export default function LoginForm({ next }: { next: string }) {
         />
       </div>
 
-      {state.error && (
+        <div className="text-end mb-3">
+          <Link href="/forgot-password" className="small text-decoration-none">
+            Esqueceu a palavra-passe?
+          </Link>
+        </div>
+
+        {state.error && (
         <div className="alert alert-danger rounded-3 small py-2 px-3">
           <i className="bi bi-exclamation-triangle me-1"></i>
           {state.error}

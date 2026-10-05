@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import LoginForm from "./LoginForm";
+import Footer from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
 
@@ -23,11 +24,16 @@ export default async function LoginPage({
   }
 
   return (
+    <>
     <div className="px-auth-page">
       <div className="px-auth-card">
-        <span className="px-auth-badge">
+        <div className="text-center mb-3">
+          <img src="/images/Logo.png" alt="FarmaGo" style={{ height: "50px" }} />
+        </div>
+
+        {/*<span className="px-auth-badge">
           <i className="bi bi-box-arrow-in-right"></i>
-        </span>
+        </span>*/}
 
         <h1 className="h4 fw-bold mb-1 mt-3">Entrar na conta</h1>
         <p className="text-secondary small mb-4">
@@ -51,5 +57,7 @@ export default async function LoginPage({
         </p>
       </div>
     </div>
+      <Footer />
+    </>
   );
 }

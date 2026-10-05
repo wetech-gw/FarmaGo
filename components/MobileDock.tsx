@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const dockItems = [
   { href: "/", icon: "bi-house", label: "Início" },
@@ -14,22 +13,10 @@ const dockItems = [
 
 export default function MobileDock() {
   const pathname = usePathname();
-  const [visible, setVisible] = useState(true);
-  const [lastScroll, setLastScroll] = useState(0);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const current = window.scrollY;
-      setVisible(current < 80 || current < lastScroll);
-      setLastScroll(current);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [lastScroll]);
 
   return (
     <nav
-      className={`mobile-dock ${visible ? "" : "mobile-dock--hidden"}`}
+      className="mobile-dock"
       aria-label="Navegação principal"
     >
       <div className="mobile-dock-inner">

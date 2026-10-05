@@ -12,6 +12,7 @@ interface Medication {
   totalQuantity?: number;
   inStock?: boolean;
   minPrice?: number | null;
+  needsPrescription?: boolean;
 }
 
 interface Props {
@@ -66,17 +67,20 @@ export default function MedicationCard({ med, href, showAvailability = true }: P
 
         {med.minPrice != null && (
           <div className="med-price fw-bold" style={{ color: "#0f8a0e" }}>
-            {med.minPrice.toFixed(2)}
+            {med.minPrice.toFixed(0)} FCFA
           </div>
         )}
 
         <div className="med-meta">
-          <span className="d-inline-flex align-items-center gap-1">
-            <i className="bi bi-shop-window" aria-hidden="true"></i>
-            {med.pharmacyCount ?? 0} farm{(med.pharmacyCount ?? 0) === 1 ? "ácia" : "ácias"}
-          </span>
-          <span className="med-meta-sep" aria-hidden="true"></span>
-          <span className="d-inline-flex align-items-center gap-1">
+          {med.needsPrescription && (
+            <span className="d-inline-flex align-items-center gap-1 text-warning fw-semibold">
+              <i className="bi bi-file-earmark-medical" aria-hidden="true"></i>
+              Receita obrigatória
+            </span>
+          )}
+          {med.needsPrescription && (
+            <span className="med-meta-sep" aria-hidden="true"></span>
+          )}          <span className="d-inline-flex align-items-center gap-1">
             <i className="bi bi-capsule" aria-hidden="true"></i>
             {med.dosage}
           </span>

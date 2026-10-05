@@ -15,8 +15,12 @@ export default async function Navbar() {
           <div className="container">
 
             {/* Logo */}
-            <Link href="/" className="navbar-brand text-success fw-bold fs-3 m-0">
-              FarmaGo
+            <Link href="/" className="navbar-brand m-0">
+              <img
+                src="/images/Logo.png"
+                alt="FarmaGo"
+                style={{ height: "50px", width: "auto" }}
+              />
             </Link>
 
             <NavbarCollapse>
@@ -92,11 +96,11 @@ export default async function Navbar() {
                 </Link>
               </li>
 
-              {/*<li className="nav-item">
+              <li className="nav-item">
                 <Link href="/guards" className="nav-link text-danger fw-bold small text-uppercase tracking-wider p-0">
                   ● Farmácias de Plantão
                 </Link>
-              </li>*/}
+              </li>
 
               {/*<li className="nav-item">
                 <Link href="/pharmacies" className="nav-link text-dark fw-semibold small text-uppercase tracking-wider p-0">
