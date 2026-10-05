@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
+import NavbarCollapse from "@/components/NavbarCollapse";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const user = await getCurrentUser();
   return (
     <>
       {/* Wrapper para evitar que o conteúdo da página fique escondido debaixo do menu fixo */}
@@ -13,47 +16,13 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="navbar-brand text-success fw-bold fs-3 m-0">
-              Pharmax_GW
+              FarmaGo
             </Link>
 
-            {/* Botão Hambúrguer (Visível apenas em Mobile) */}
-            <button
-              className="navbar-toggler border-0"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarContent"
-              aria-controls="navbarContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-
-            {/* Conteúdo Retrátil (Hambúrguer) */}
-            <div className="collapse navbar-collapse mt-3 mt-lg-0" id="navbarContent">
-              
-              {/* 1. Espaçador Esquerdo (Empurra a busca para o centro no desktop) */}
-              <div className="flex-grow-1 d-none d-lg-block"></div>
-
-              {/* 2. Barra de Pesquisa Centralizada */}
-              <div className="my-3 my-lg-0" style={{ maxWidth: "200px", width: "100%" }}>
-                <div className="input-group">
-                  <span className="input-group-text bg-white border-success border-end-0">
-                    <i className="bi bi-search text-success"></i>
-                  </span>
-                  <input
-                    type="text"
-                    className="form-control bg-white border-success border-start-0 ps-0 shadow-none"
-                    placeholder="Pesquisar..."
-                  />
-                </div>
-              </div>
-
-              {/* 3. Espaçador Direito (Garante a centralização perfeita entre o logo e os links) */}
-              <div className="flex-grow-1 d-none d-lg-block"></div>
-
-              {/* 4. Links de Apoio e Ícones (Alinhados totalmente à direita) */}
+            <NavbarCollapse>
               <div className="navbar-nav ms-auto align-items-lg-center gap-3 gap-lg-4">
+                {/* 3. Espaçador Direito */}
+                <div className="flex-grow-1"></div>
                 <Link href="/" className="nav-link text-secondary fw-medium small hover-success px-0">
                   Início
                 </Link>
@@ -66,19 +35,49 @@ export default function Navbar() {
                   Contate-nos
                 </Link>
 
-                {/* Perfil */}
-                {/* <Link href="/profile" className="nav-link text-dark hover-success px-0 mt-1 mt-lg-0">
-                  <i className="bi bi-person-circle fs-4 d-none d-lg-inline"></i>
-                  <span className="d-lg-none fw-medium small text-secondary">Minha Conta</span>
+                {/* Conta: dashboard se houver sessão, login/registo caso contrário */}
+                {user ? (
+                  <Link
+                    href={user.role === "admin" ? "/admin/dashboard" : "/dashboard"}
+                    className="nav-link text-dark hover-success px-0 mt-1 mt-lg-0 d-flex align-items-center"
+                  >
+                    <i className="bi bi-person-circle fs-4"></i>
+                    <span className="d-none d-lg-inline small fw-medium ms-2">
+                      {user.name.split(" ")[0]}
+                    </span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="nav-link text-secondary fw-medium small hover-success px-0"
+                    >
+                      Entrar
+                    </Link>
+
+                    <Link
+                      href="/register"
+                      className="btn btn-success rounded-pill px-3 py-1 fw-medium small"
+                    >
+                      Registar farmácia
+                    </Link>
+                  </>
+                )}
+
+                {/* <Link href="/cart" className="nav-link text-dark hover-success px-0 mt-1 mt-lg-0 position-relative">
+                  <i className="bi bi-cart3 fs-4 d-none d-lg-inline"></i>
+                  <span className="d-lg-none fw-medium small text-secondary">Carrinho</span>
+                  <span className="position-absolute top-0 start-100 translate-middle badge bg-danger rounded-pill">
+                    3
+                  </span>
                 </Link> */}
               </div>
-            </div>
-
+            </NavbarCollapse>
           </div>
         </nav>
 
-        {/* Categorias Inferiores (Scroll horizontal no Mobile para não ocupar muito espaço) */}
-        <div className="border-top border-bottom bg-light">
+        {/* Categorias Inferiores (apenas desktop, no mobile fica no dock) */}
+        <div className="border-top border-bottom bg-light d-none d-lg-block">
           <div className="container">
             <ul className="nav justify-content-lg-center flex-nowrap overflow-x-auto py-2 text-nowrap gap-3 gap-lg-4">
               <li className="nav-item">
@@ -93,17 +92,17 @@ export default function Navbar() {
                 </Link>
               </li>
 
-              <li className="nav-item">
+              {/*<li className="nav-item">
                 <Link href="/guards" className="nav-link text-danger fw-bold small text-uppercase tracking-wider p-0">
                   ● Farmácias de Plantão
                 </Link>
-              </li>
+              </li>*/}
 
-              <li className="nav-item">
-                <Link href="/parapharmacy" className="nav-link text-dark fw-semibold small text-uppercase tracking-wider p-0">
+              {/*<li className="nav-item">
+                <Link href="/pharmacies" className="nav-link text-dark fw-semibold small text-uppercase tracking-wider p-0">
                   ● Parafarmácias
                 </Link>
-              </li>
+              </li>*/}
             </ul>
           </div>
         </div>

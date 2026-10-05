@@ -11,7 +11,7 @@ export default function Footer() {
           {/* Coluna 1: Logo e Descrição */}
           <div className="col-12 col-lg-6">
             <div className="d-flex align-items-center gap-2 mb-3">
-              <span className="text-success fw-bold fs-3">Pharmax_GW</span>
+              <span className="text-success fw-bold fs-3">FarmaGo</span>
               {/* Ícone de pílula duplo simulado em verde */}
               <i className="bi bi-capsule-capsule text-success fs-3"></i>
             </div>
@@ -74,7 +74,7 @@ export default function Footer() {
           {/* Linha de Copyright Centralizada */}
           <div className="col-12 text-center mt-4">
             <p className="text-secondary small m-0" style={{ opacity: 0.7 }}>
-              copyright ©Pharmax 2026. todos os direitos reservados
+              copyright ©FarmaGo 2026. todos os direitos reservados
             </p>
           </div>
 

@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id                  Int        @id @default(autoincrement())
+  name                String     @db.VarChar(150)
+  email               String     @unique @db.VarChar(150)
+  passwordHash        String     @map("password_hash") @db.VarChar(255)
+  phone               String?    @db.VarChar(30)
+  role                Role       @default(owner)
+  createdAt           DateTime   @default(now()) @map("created_at")
+  pharmacies          Pharmacy[] @relation("PharmacyOwner")
+  validatedPharmacies Pharmacy[] @relation("PharmacyValidator")
+  sessions            Session[]
+
+  @@map("users")
+}
+
+model Session {
+  token     String   @id @db.VarChar(80)
+  userId    Int      @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Pharmacy {
+  id              Int             @id @default(autoincrement())
+  ownerId         Int             @map("owner_id")
+  name            String          @db.VarChar(150)
+  image           String?         @default("/images/default-pharmacy.svg") @db.VarChar(255)
+  address         String          @db.Text
+  phone           String          @db.VarChar(30)
+  schedule        String          @db.VarChar(100)
+  hours           String          @db.VarChar(100)
+  latitude        Float?
+  longitude       Float?
+  isGuard         Boolean         @default(false) @map("is_guard")
+  isOpen          Boolean         @default(true) @map("is_open")
+  status          PharmacyStatus  @default(pending)
+  validatedAt     DateTime?       @map("validated_at")
+  validatedById   Int?            @map("validated_by_id")
+  rejectionReason String?         @map("rejection_reason") @db.Text
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  clients         Client[]
+  expenses        Expense[]
+  medications     Medication[]
+  owner           User            @relation("PharmacyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  validatedBy     User?           @relation("PharmacyValidator", fields: [validatedById], references: [id])
+  stocks          PharmacyStock[]
+  sales           Sale[]
+
+  @@index([status])
+  @@index([ownerId], map: "pharmacies_owner_id_fkey")
+  @@index([validatedById], map: "pharmacies_validated_by_id_fkey")
+  @@map("pharmacies")
+}
+
+model Medication {
+  id         Int             @id @default(autoincrement())
+  name       String          @db.VarChar(150)
+  dosage     String          @db.VarChar(50)
+  image      String?         @db.VarChar(255)
+  description String?        @db.Text
+  needsPrescription Boolean @default(false) @map("needs_prescription")
+  pharmacyId Int?            @map("pharmacy_id")
+  createdAt  DateTime        @default(now()) @map("created_at")
+  pharmacy   Pharmacy?       @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  stocks     PharmacyStock[]
+  saleItems  SaleItem[]
+
+  @@index([pharmacyId])
+  @@map("medications")
+}
+
+model PharmacyStock {
+  id           Int        @id @default(autoincrement())
+  pharmacyId   Int        @map("pharmacy_id")
+  medicationId Int        @map("medication_id")
+  quantity     Int        @default(0)
+  unitPrice    Decimal    @default(0.00) @map("unit_price") @db.Decimal(10, 2)
+  expiryDate   DateTime   @map("expiry_date") @db.Date
+  batchNumber  String?    @map("batch_number") @db.VarChar(50)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  medication   Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  pharmacy     Pharmacy   @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([medicationId], map: "pharmacy_stocks_medication_id_fkey")
+  @@index([pharmacyId], map: "pharmacy_stocks_pharmacy_id_fkey")
+  @@map("pharmacy_stocks")
+}
+
+model Expense {
+  id          Int             @id @default(autoincrement())
+  pharmacyId  Int             @map("pharmacy_id")
+  title       String          @db.VarChar(150)
+  category    ExpenseCategory
+  amount      Decimal         @db.Decimal(10, 2)
+  expenseDate DateTime        @map("expense_date") @db.Date
+  createdAt   DateTime        @default(now()) @map("created_at")
+  pharmacy    Pharmacy        @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId], map: "expenses_pharmacy_id_fkey")
+  @@map("expenses")
+}
+
+model Client {
+  id         Int      @id @default(autoincrement())
+  pharmacyId Int      @map("pharmacy_id")
+  name       String   @db.VarChar(150)
+  phone      String?  @db.VarChar(30)
+  email      String?  @db.VarChar(150)
+  createdAt  DateTime @default(now()) @map("created_at")
+  pharmacy   Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  sales      Sale[]
+
+  @@index([pharmacyId])
+  @@map("clients")
+}
+
+model Sale {
+  id         Int        @id @default(autoincrement())
+  pharmacyId Int        @map("pharmacy_id")
+  clientId   Int        @map("client_id")
+  total      Decimal    @db.Decimal(10, 2)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  items      SaleItem[]
+  client     Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  pharmacy   Pharmacy   @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId])
+  @@index([clientId])
+  @@map("sales")
+}
+
+model SaleItem {
+  id           Int        @id @default(autoincrement())
+  saleId       Int        @map("sale_id")
+  medicationId Int        @map("medication_id")
+  quantity     Int
+  unitPrice    Decimal    @map("unit_price") @db.Decimal(10, 2)
+  subtotal     Decimal    @db.Decimal(10, 2)
+  medication   Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  sale         Sale       @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
+  @@index([medicationId], map: "sale_items_medication_id_fkey")
+  @@map("sale_items")
+}
+
+enum Role {
+  admin
+  owner
+}
+
+enum PharmacyStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ExpenseCategory {
+  infraestrutura
+  pessoal
+  stock
+  outros
+}

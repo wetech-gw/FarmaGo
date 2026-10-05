@@ -1,15 +1,7 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import PharmacyCarousel from "@/components/PharmacyCarousel";
-import Footer from "@/components/Footer";
-export const dynamic = 'force-static';
+import PharmacyFinder from "@/components/PharmacyFinder";
+
+export const dynamic = "force-dynamic";
+
 export default function Home() {
-  return (
-    <>
-      <Navbar />
-      <Hero />
-      <PharmacyCarousel />
-      <Footer />
-    </>
-  );
+  return <PharmacyFinder />;
 }
