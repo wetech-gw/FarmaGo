@@ -1,15 +1,17 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, homePathForRole } from "@/lib/auth";
 import LoginForm from "./LoginForm";
 import Footer from "@/components/Footer";
+import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Entrar | FarmaGo",
-  description: "Aceda à sua conta de farmacêutico ou de administrador.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t("login.metaTitle"), description: t("login.metaDescription") };
+}
 
 export default async function LoginPage({
   searchParams,
@@ -17,10 +19,11 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string; error?: string }>;
 }) {
   const { next, error } = await searchParams;
+  const t = await getT();
   const user = await getCurrentUser();
 
   if (user) {
-    redirect(user.role === "admin" ? "/admin/dashboard" : "/dashboard");
+    redirect(homePathForRole(user.role));
   }
 
   return (
@@ -31,13 +34,9 @@ export default async function LoginPage({
           <img src="/images/Logo.png" alt="FarmaGo" style={{ height: "50px" }} />
         </div>
 
-        {/*<span className="px-auth-badge">
-          <i className="bi bi-box-arrow-in-right"></i>
-        </span>*/}
-
-        <h1 className="h4 fw-bold mb-1 mt-3">Entrar na conta</h1>
+        <h1 className="h4 fw-bold mb-1 mt-3">{t("login.title")}</h1>
         <p className="text-secondary small mb-4">
-          Credenciais de farmacêutico (dashboard da farmácia) ou de administrador.
+          {t("login.subtitle")}
         </p>
 
         {error && (
@@ -50,9 +49,9 @@ export default async function LoginPage({
         <LoginForm next={next ?? ""} />
 
         <p className="text-center small text-secondary mt-4 mb-0">
-          Ainda não tem conta?{" "}
+          {t("login.noAccount")} {" "}
           <Link href="/register" className="fw-semibold text-decoration-none">
-            Registar a minha farmácia
+            {t("login.registerPharmacy")}
           </Link>
         </p>
       </div>

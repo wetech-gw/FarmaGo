@@ -6,6 +6,7 @@ import PharmacyMap from "./PharmacyMap";
 import PharmacySpotCard from "./PharmacySpotCard";
 import PharmacyDetail from "./PharmacyDetail";
 import { distanceInKm } from "@/lib/geo";
+import { useI18n } from "@/components/I18nProvider";
 import type { PharmacySpot } from "@/types/pharmacy";
 
 type SpotFilter = "open" | "all" | "closed" | "guard";
@@ -20,14 +21,6 @@ interface Props {
   spots: PharmacySpot[];
   initialFilter?: SpotFilter;
 }
-
-const FILTERS: { value: SpotFilter; label: string; icon: string }[] = [
-  { value: "open", label: "Abertas", icon: "bi-check2-circle" },
-  { value: "all", label: "Todas", icon: "bi-grid" },
-  { value: "closed", label: "Fechadas", icon: "bi-dash-circle" },
-  { value: "guard", label: "Plantão", icon: "bi-clock-history" },
-];
-
 function normalize(value: string): string {
   return value
     .normalize("NFD")
@@ -43,6 +36,13 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const { locale, t } = useI18n();
+  const FILTERS: { value: SpotFilter; label: string; icon: string }[] = [
+    { value: "open", label: t("open"), icon: "bi-check2-circle" },
+    { value: "all", label: t("all"), icon: "bi-grid" },
+    { value: "closed", label: t("closed"), icon: "bi-dash-circle" },
+    { value: "guard", label: t("guard"), icon: "bi-clock-history" },
+  ];
 
   const router = useRouter();
   const selectSpot = useCallback((id: number) => {
@@ -123,11 +123,11 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
       if (a.distanceKm !== null) return -1;
       if (b.distanceKm !== null) return 1;
       if (a.spot.isOpen !== b.spot.isOpen) return a.spot.isOpen ? -1 : 1;
-      return a.spot.name.localeCompare(b.spot.name, "pt");
+      return a.spot.name.localeCompare(b.spot.name, locale);
     });
 
     return withDistance;
-  }, [spots, query, filter, userLocation]);
+  }, [spots, query, filter, userLocation, locale]);
 
   // Identidade estável: evita redesenhar todos os marcadores a cada render.
   const mapSpots = useMemo(() => results.map(({ spot }) => spot), [results]);
@@ -149,7 +149,7 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
     setGeoError(null);
 
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setGeoError("O navegador não suporta geolocalização.");
+      setGeoError(t("explorer.geoUnsupported"));
       return;
     }
 
@@ -160,10 +160,7 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
           longitude: position.coords.longitude,
           accuracy: position.coords.accuracy,
         }),
-      () =>
-        setGeoError(
-          "Não foi possível obter a sua localização. Verifique as permissões do navegador.",
-        ),
+      () => setGeoError(t("explorer.geoDenied")),
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
     );
   };
@@ -194,17 +191,17 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Pesquisar farmácia, bairro ou medicamento..."
-              aria-label="Pesquisar farmácia, bairro ou medicamento"
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchLabel")}
             />
             {query && (
-              <button type="button" onClick={() => setQuery("")} aria-label="Limpar pesquisa">
+              <button type="button" onClick={() => setQuery("")} aria-label={t("explorer.clearSearch")}>
                 <i className="bi bi-x-lg" aria-hidden="true"></i>
               </button>
             )}
           </div>
 
-          <div className="px-chips" role="group" aria-label="Filtrar farmácias">
+          <div className="px-chips" role="group" aria-label={t("explorer.filterGroup")}>
             {FILTERS.map((item) => (
               <button
                 key={item.value}
@@ -226,7 +223,7 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
             onClick={requestLocation}
           >
             <i className="bi bi-crosshair" aria-hidden="true"></i>
-            {userLocation ? "Localização ativa" : "Usar a minha localização"}
+            {userLocation ? t("locationActive") : t("useMyLocation")}
           </button>
         </div>
 
@@ -241,18 +238,17 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
           <aside className="px-explorer-list">
             <div className="px-list-head">
               <span aria-live="polite">
-                <strong>{results.length}</strong> farmácia
-                {results.length === 1 ? "" : "s"}
+                <strong>{t("explorer.resultsCount", { count: results.length })}</strong>
                 {mappedCount < results.length && (
                   <span className="px-list-note">
                     {" "}
-                    · {results.length - mappedCount} sem coordenadas
+                    · {results.length - mappedCount} {t("explorer.noCoordinates")}
                   </span>
                 )}
               </span>
               {userLocation && (
                 <span className="px-list-note">
-                  <i className="bi bi-sort-down" aria-hidden="true"></i> por distância
+                  <i className="bi bi-sort-down" aria-hidden="true"></i> {t("explorer.sortByDistance")}
                 </span>
               )}
             </div>
@@ -261,9 +257,9 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
               {results.length === 0 ? (
                 <div className="px-list-empty">
                   <i className="bi bi-geo-alt" aria-hidden="true"></i>
-                  <p className="mb-0">Nenhuma farmácia corresponde à pesquisa.</p>
+                  <p className="mb-0">{t("noResults")}</p>
                   <button type="button" onClick={() => { setQuery(""); setFilter("all"); }}>
-                    Ver todas as farmácias
+                    {t("seeAll")}
                   </button>
                 </div>
               ) : (
@@ -293,16 +289,16 @@ export default function PharmacyExplorer({ spots, initialFilter = "open" }: Prop
             <div className="px-map-legend">
               <span>
                 <span className="px-pin-dot px-pin-dot--open" aria-hidden="true"></span>
-                Aberta
+                {t("explorer.legendOpen")}
               </span>
               <span>
                 <span className="px-pin-dot px-pin-dot--closed" aria-hidden="true"></span>
-                Fechada
+                {t("explorer.legendClosed")}
               </span>
               {userLocation && (
                 <span>
                   <span className="px-pin-dot px-pin-dot--user" aria-hidden="true"></span>
-                  A si
+                  {t("explorer.legendYou")}
                 </span>
               )}
             </div>

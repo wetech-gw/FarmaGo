@@ -4,16 +4,18 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requirePharmacy } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 /** Confirma que o registo pertence à farmácia da sessão. */
 
 export async function togglePharmacyOpen(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
   const id = Number(formData.get("id"));
   const isOpen = String(formData.get("isOpen")) === "1";
 
   // Só a própria farmácia pode mudar o seu estado.
-  if (id !== pharmacyId) throw new Error("Farmácia inválida.");
+  if (id !== pharmacyId) throw new Error(t("error.invalidPharmacy"));
 
   await prisma.pharmacy.update({ where: { id: pharmacyId }, data: { isOpen } });
 
@@ -22,13 +24,31 @@ export async function togglePharmacyOpen(formData: FormData): Promise<void> {
   revalidatePath("/");
 }
 
+export async function togglePharmacyGuard(formData: FormData): Promise<void> {
+  const t = await getT();
+  const { pharmacyId } = await requirePharmacy();
+  const id = Number(formData.get("id"));
+  const isGuard = String(formData.get("isGuard")) === "1";
+
+  // Só a própria farmácia pode mudar o seu estado de plantão.
+  if (id !== pharmacyId) throw new Error(t("error.invalidPharmacy"));
+
+  await prisma.pharmacy.update({ where: { id: pharmacyId }, data: { isGuard } });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/pharmacies");
+  revalidatePath("/guards");
+  revalidatePath("/");
+}
+
 export async function updateStockQuantity(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
   const id = Number(formData.get("id"));
   const quantity = Math.max(0, Number(formData.get("quantity")) || 0);
 
   const found = await prisma.pharmacyStock.findFirst({ where: { id, pharmacyId } });
-  if (!found) throw new Error("Registo não pertence à sua farmácia.");
+  if (!found) throw new Error(t("error.notYourPharmacy"));
 
   await prisma.pharmacyStock.update({ where: { id }, data: { quantity } });
 
@@ -38,6 +58,7 @@ export async function updateStockQuantity(formData: FormData): Promise<void> {
 }
 
 export async function saveStock(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
 
   const id = formData.get("id") ? Number(formData.get("id")) : null;
@@ -48,7 +69,7 @@ export async function saveStock(formData: FormData): Promise<void> {
   const unitPrice = String(formData.get("unitPrice") ?? "0").replace(",", ".");
 
   if (!medicationId || !expiry) {
-    throw new Error("Escolha o medicamento e a data de validade.");
+    throw new Error(t("error.chooseMedicationAndExpiry"));
   }
 
   const data = {
@@ -60,7 +81,7 @@ export async function saveStock(formData: FormData): Promise<void> {
 
   if (id) {
     const found = await prisma.pharmacyStock.findFirst({ where: { id, pharmacyId } });
-    if (!found) throw new Error("Registo não pertence à sua farmácia.");
+    if (!found) throw new Error(t("error.notYourPharmacy"));
     await prisma.pharmacyStock.update({ where: { id }, data });
   } else {
     await prisma.pharmacyStock.create({
@@ -75,11 +96,12 @@ export async function saveStock(formData: FormData): Promise<void> {
 }
 
 export async function deleteStock(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
   const id = Number(formData.get("id"));
 
   const found = await prisma.pharmacyStock.findFirst({ where: { id, pharmacyId } });
-  if (!found) throw new Error("Registo não pertence à sua farmácia.");
+  if (!found) throw new Error(t("error.notYourPharmacy"));
 
   await prisma.pharmacyStock.delete({ where: { id } });
 
@@ -89,6 +111,7 @@ export async function deleteStock(formData: FormData): Promise<void> {
 }
 
 export async function saveExpense(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
 
   const id = formData.get("id") ? Number(formData.get("id")) : null;
@@ -99,7 +122,7 @@ export async function saveExpense(formData: FormData): Promise<void> {
   const expenseDate = String(formData.get("expenseDate") ?? "");
 
   if (!title || !amount || !expenseDate) {
-    throw new Error("Preencha descrição, valor e data.");
+    throw new Error(t("error.fillDescriptionAmountDate"));
   }
 
   const data = {
@@ -111,7 +134,7 @@ export async function saveExpense(formData: FormData): Promise<void> {
 
   if (id) {
     const found = await prisma.expense.findFirst({ where: { id, pharmacyId } });
-    if (!found) throw new Error("Despesa não pertence à sua farmácia.");
+    if (!found) throw new Error(t("error.expenseNotYours"));
     await prisma.expense.update({ where: { id }, data });
   } else {
     await prisma.expense.create({ data: { ...data, pharmacyId } });
@@ -123,11 +146,12 @@ export async function saveExpense(formData: FormData): Promise<void> {
 }
 
 export async function deleteExpense(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
   const id = Number(formData.get("id"));
 
   const found = await prisma.expense.findFirst({ where: { id, pharmacyId } });
-  if (!found) throw new Error("Despesa não pertence à sua farmácia.");
+  if (!found) throw new Error(t("error.expenseNotYours"));
 
   await prisma.expense.delete({ where: { id } });
 

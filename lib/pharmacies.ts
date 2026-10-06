@@ -3,7 +3,7 @@ import type { PharmacySpot } from "@/types/pharmacy";
 
 export async function getPharmacySpot(id: number, isGuard: boolean): Promise<PharmacySpot | null> {
   const pharmacy = await prisma.pharmacy.findFirst({
-    where: { id, status: "approved", isGuard },
+    where: { id, status: "approved", isGuard, isActive: true },
     include: { stocks: { include: { medication: true } } },
   });
 
@@ -39,7 +39,7 @@ export async function getPharmacySpot(id: number, isGuard: boolean): Promise<Pha
 export async function getPharmacySpots(): Promise<PharmacySpot[]> {
   const pharmacies = await prisma.pharmacy.findMany({
     // Só as farmácias validadas presencialmente aparecem no site público.
-    where: { status: "approved" },
+    where: { status: "approved", isActive: true },
     include: { stocks: { include: { medication: true } } },
     orderBy: [{ isOpen: "desc" }, { name: "asc" }],
   });

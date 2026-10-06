@@ -1,4 +1,10 @@
+"use client";
+
+import { useT } from "@/components/I18nProvider";
+
 export default function Hero() {
+  const t = useT();
+
   return (
     <section
       className="hero position-relative d-flex align-items-center text-center text-white"
@@ -22,8 +28,7 @@ export default function Hero() {
             
             {/* Título Principal */}
             <h5 className="display-4 fw-bold mb-4 tracking-tight">
-              Encontre o seu medicamento <br className="d-none d-md-block" />
-              o mais rapidamente possível
+              {t("hero.title")}
             </h5>
 
             {/* Barra de Pesquisa Hero */}
@@ -39,13 +44,14 @@ export default function Hero() {
                 <input
                   type="text"
                   className="form-control border-0 bg-transparent shadow-none fs-5 py-2 ps-1"
-                  placeholder="Pesquisar medicamento..."
+                  placeholder={t("hero.searchPlaceholder")}
+                  aria-label={t("hero.searchPlaceholder")}
                   style={{ color: "#333" }}
                 />
 
                 {/* Botão de Ação */}
                 <button className="btn btn-success rounded-pill px-4 py-2 fw-semibold fs-5 text-uppercase ms-2">
-                  Validar           
+                  {t("hero.validate")}
                 </button>
 
               </div>

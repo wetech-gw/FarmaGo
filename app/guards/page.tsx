@@ -1,17 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getPharmacySpots } from "@/lib/pharmacies";
+import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Farmácias de Plantão | FarmaGo",
-  description:
-    "Todas as farmácias de plantão, com horário, contactos e medicamentos disponíveis.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t("guardsPage.metaTitle"), description: t("guardsPage.metaDescription") };
+}
 
 export default async function GuardsPage() {
+  const t = await getT();
   const spots = await getPharmacySpots();
   const guardCount = spots.filter((spot) => spot.isGuard).length;
 
@@ -28,31 +30,30 @@ export default async function GuardsPage() {
           }}
         >
           <div className="container position-relative">
-            <nav aria-label="breadcrumb">
+            <nav aria-label={t("common.breadcrumb")}>
               <ol className="breadcrumb mb-2">
                 <li className="breadcrumb-item">
                   <Link href="/" className="text-white-50">
-                    Início
+                    {t("home")}
                   </Link>
                 </li>
                 <li className="breadcrumb-item active text-white" aria-current="page">
-                  Farmácias de Plantão
+                  {t("guardsPage.breadcrumb")}
                 </li>
               </ol>
             </nav>
 
             <h1 className="fw-bold mb-2" style={{ letterSpacing: "-0.02em" }}>
-              Farmácias de Plantão
+              {t("guardsPage.title")}
             </h1>
             <p className="mb-4 text-white-50" style={{ maxWidth: "62ch" }}>
-              Veja todas as farmácias de plantão disponíveis, com horário,
-              contactos e os medicamentos em stock.
+              {t("guardsPage.description")}
             </p>
 
             <div className="d-flex flex-wrap gap-2">
               <span className="px-hero-pill">
                 <i className="bi bi-clock-history"></i>
-                {guardCount} de plantão agora
+                {t("guardsPage.onDutyNow", { count: guardCount })}
               </span>
             </div>
           </div>
@@ -81,7 +82,7 @@ export default async function GuardsPage() {
                         className="btn btn-success w-100 rounded-pill fw-semibold mt-auto text-decoration-none d-flex align-items-center justify-content-center"
                       >
                         <i className="bi bi-arrow-right-circle me-2"></i>
-                        Mais detalhes
+                        {t("common.details")}
                       </Link>
                     </div>
                   </div>

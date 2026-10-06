@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { togglePharmacyOpen, updateStockQuantity } from "./actions";
 import { AdminImageThumb } from "@/components/AdminImageThumb";
 import { nowMs } from "@/lib/dates";
+import { formatDate, getI18n } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ registered?: string }>;
 }) {
   const { registered } = await searchParams;
+  const { locale, t } = await getI18n();
   const user = await requireUser();
   if (user.role !== "owner") redirect("/admin/dashboard");
 
@@ -29,7 +31,7 @@ export default async function DashboardPage({
         include: { medication: true },
         orderBy: { createdAt: "desc" },
       },
-      expenses: { orderBy: { expenseDate: "desc" }, take: 5 },
+        sales: { orderBy: { createdAt: "desc" }, take: 5, include: { client: true } },
     },
   });
 
@@ -45,10 +47,10 @@ export default async function DashboardPage({
   );
   const totalUnits = inStock.reduce((sum, stock) => sum + stock.quantity, 0);
   const distinctMedications = new Set(pharmacy.stocks.map((stock) => stock.medicationId)).size;
-  const expensesTotal = pharmacy.expenses.reduce(
-    (sum, expense) => sum + Number(expense.amount),
-    0,
-  );
+  const salesTotal = await prisma.sale.aggregate({
+    where: { pharmacyId: pharmacy.id },
+    _sum: { total: true },
+  }).then((r) => Number(r._sum.total ?? 0));
 
   const statusBanner = pharmacy.status === "approved" ? null : (
     <div
@@ -63,25 +65,22 @@ export default async function DashboardPage({
       ></i>
       <div className="flex-grow-1">
         <div className="fw-bold">
-          {pharmacy.status === "pending"
-            ? "Farmácia em validação"
-            : "Farmácia rejeitada"}
+          {pharmacy.status === "pending" ? t("dash.pendingTitle") : t("dash.rejectedTitle")}
         </div>
         <div className="small">
           {pharmacy.status === "pending"
-            ? "A nossa equipa vai visitar a farmácia para confirmar os dados. Só depois disso a farmácia aparece no site público."
-            : pharmacy.rejectionReason ||
-              "A equipa não conseguiu validar os dados. Contacte-nos para mais informação."}
+            ? t("dash.pendingText")
+            : pharmacy.rejectionReason || t("dash.rejectedFallback")}
         </div>
       </div>
     </div>
   );
 
   const kpis = [
-    { label: "Medicamentos", value: distinctMedications, icon: "bi-capsule",      color: "#0f8a0e" },
-    { label: "Unidades em stock", value: totalUnits,  icon: "bi-box-seam",      color: "#2563eb" },
-    { label: "A caducar (90 dias)", value: expiringSoon.length, icon: "bi-hourglass-bottom", color: "#ea580c" },
-    { label: "Despesas registadas", value: expensesTotal.toFixed(0), icon: "bi-receipt", color: "#7c3aed" },
+    { label: t("dash.kpiMedications"), value: distinctMedications, icon: "bi-capsule",        color: "#0f8a0e" },
+    { label: t("dash.kpiUnits"),       value: totalUnits,               icon: "bi-box-seam",        color: "#2563eb" },
+    { label: t("dash.kpiExpiring"),    value: expiringSoon.length,      icon: "bi-hourglass-bottom", color: "#ea580c" },
+    { label: t("dash.kpiSalesTotal"),  value: salesTotal.toFixed(0),    icon: "bi-cart-check",      color: "#7c3aed" },
   ];
 
   return (
@@ -90,11 +89,8 @@ export default async function DashboardPage({
         <div className="alert alert-success rounded-4 d-flex align-items-center gap-3">
           <i className="bi bi-check2-circle fs-4"></i>
           <div>
-            <div className="fw-bold">Conta criada com sucesso</div>
-            <div className="small">
-              A sua farmácia foi registada e está <strong>em validação</strong>. Avisamos
-              assim que a visita for concluída.
-            </div>
+            <div className="fw-bold">{t("dash.registeredTitle")}</div>
+            <div className="small">{t("dash.registeredText")}</div>
           </div>
         </div>
       )}
@@ -103,27 +99,27 @@ export default async function DashboardPage({
 
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-          <h1 className="h4 fw-bold mb-1">Olá, {user.name.split(" ")[0]}</h1>
+          <h1 className="h4 fw-bold mb-1">{t("dash.hello", { name: user.name.split(" ")[0] })}</h1>
           <p className="text-secondary small mb-0">
-            {registered === "1" ? "Comece por confirmar os dados da farmácia." : "Aqui tem o resumo da sua farmácia."}
+            {registered === "1" ? t("dash.summaryAfterRegister") : t("dash.summaryNormal")}
           </p>
         </div>
 
         {/* Estado ABERTO / FECHADA */}
-        <form action={togglePharmacyOpen} className="d-flex align-items-center gap-3">
+        <form action={togglePharmacyOpen} className="d-flex flex-wrap align-items-center gap-3">
           <input type="hidden" name="id" value={pharmacy.id} />
           <input type="hidden" name="isOpen" value={pharmacy.isOpen ? "0" : "1"} />
 
           <div className="text-end">
-            <div className="small text-secondary">Estado da farmácia</div>
+            <div className="small text-secondary">{t("dash.pharmacyState")}</div>
             <div className="fw-bold fs-5">
               {pharmacy.isOpen ? (
                 <span className="text-success">
-                  <i className="bi bi-unlock me-1"></i>ABERTA
+                  <i className="bi bi-unlock me-1"></i>{t("dash.openState")}
                 </span>
               ) : (
                 <span className="text-secondary">
-                  <i className="bi bi-lock me-1"></i>FECHADA
+                  <i className="bi bi-lock me-1"></i>{t("dash.closedState")}
                 </span>
               )}
             </div>
@@ -136,9 +132,10 @@ export default async function DashboardPage({
             }`}
           >
             <i className={`bi ${pharmacy.isOpen ? "bi-toggle-off" : "bi-toggle-on"} me-2`}></i>
-            {pharmacy.isOpen ? "Marcar como fechada" : "Marcar como aberta"}
+            {pharmacy.isOpen ? t("dash.markClosed") : t("dash.markOpen")}
           </button>
         </form>
+
       </div>
 
       {/* KPIs */}
@@ -166,21 +163,21 @@ export default async function DashboardPage({
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 className="h6 fw-bold mb-0">
                   <i className="bi bi-box-seam me-2" style={{ color: "#2563eb" }}></i>
-                  Disponibilidade de stock
+                  {t("dash.stockAvailability")}
                 </h2>
                 <Link
                   href="/dashboard/stock"
                   className="btn btn-sm btn-outline-success rounded-3"
                 >
-                  Gerir stock
+                  {t("dash.manageStock")}
                 </Link>
               </div>
 
               {inStock.length === 0 ? (
                 <p className="text-secondary small mb-0">
-                  Sem stock registado.{" "}
+                  {t("dash.noStockYet")} {" "}
                   <Link href="/dashboard/stock" className="text-decoration-none">
-                    Adicionar medicamentos
+                    {t("dash.addMedications")}
                   </Link>
                   .
                 </p>
@@ -189,9 +186,9 @@ export default async function DashboardPage({
                   <table className="table align-middle mb-0">
                     <thead>
                       <tr className="small text-secondary">
-                        <th>Medicamento</th>
-                        <th>Validade</th>
-                        <th style={{ width: 190 }}>Quantidade</th>
+                        <th>{t("common.medication")}</th>
+                        <th>{t("common.expiry")}</th>
+                        <th style={{ width: 190 }}>{t("dash.thQuantity")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -221,11 +218,11 @@ export default async function DashboardPage({
                             <td>
                               <span className={`badge ${expiring ? "text-bg-warning" : "text-bg-light"}`}>
                                 {daysLeft <= 0
-                                  ? "Expirado"
-                                  : `${daysLeft} dias`}
+                                  ? t("dash.expired")
+                                  : t("common.daysCount", { count: daysLeft })}
                               </span>
                               <div className="small text-secondary">
-                                {stock.expiryDate.toLocaleDateString("pt-PT")}
+                                {formatDate(locale, stock.expiryDate)}
                               </div>
                             </td>
                             <td>
@@ -238,7 +235,7 @@ export default async function DashboardPage({
                                   min={0}
                                   className="form-control form-control-sm rounded-3"
                                   style={{ width: 80 }}
-                                  aria-label={`Quantidade de ${stock.medication.name}`}
+                                  aria-label={t("dash.quantityOf", { name: stock.medication.name })}
                                 />
                                 <button
                                   type="submit"
@@ -259,8 +256,7 @@ export default async function DashboardPage({
               {outOfStock.length > 0 && (
                 <p className="small text-secondary mb-0 mt-3">
                   <i className="bi bi-exclamation-circle me-1 text-danger"></i>
-                  {outOfStock.length} medicamento(s) com quantidade zero — não aparecem no
-                  site público.
+                  {t("dash.zeroQuantity", { count: outOfStock.length })}
                 </p>
               )}
             </div>
@@ -273,30 +269,30 @@ export default async function DashboardPage({
             <div className="card-body">
               <h2 className="h6 fw-bold mb-3">
                 <i className="bi bi-shop me-2" style={{ color: "#0f8a0e" }}></i>
-                Dados da farmácia
+                {t("dash.profileTitle")}
               </h2>
 
               <dl className="row mb-0 small">
-                <dt className="col-5 text-secondary fw-medium">Nome</dt>
+                <dt className="col-5 text-secondary fw-medium">{t("common.name")}</dt>
                 <dd className="col-7">{pharmacy.name}</dd>
 
-                <dt className="col-5 text-secondary fw-medium">Telefone</dt>
+                <dt className="col-5 text-secondary fw-medium">{t("common.phone")}</dt>
                 <dd className="col-7">{pharmacy.phone}</dd>
 
-                <dt className="col-5 text-secondary fw-medium">Horário</dt>
+                <dt className="col-5 text-secondary fw-medium">{t("common.hours")}</dt>
                 <dd className="col-7">
                   {pharmacy.schedule}
                   <span className="text-secondary"> · {pharmacy.hours}</span>
                 </dd>
 
-                <dt className="col-5 text-secondary fw-medium">Morada</dt>
+                <dt className="col-5 text-secondary fw-medium">{t("common.address")}</dt>
                 <dd className="col-7">{pharmacy.address}</dd>
 
-                <dt className="col-5 text-secondary fw-medium">Coordenadas</dt>
+                <dt className="col-5 text-secondary fw-medium">{t("detail.coordinates")}</dt>
                 <dd className="col-7">
                   {pharmacy.latitude !== null && pharmacy.longitude !== null
                     ? `${pharmacy.latitude.toFixed(4)}, ${pharmacy.longitude.toFixed(4)}`
-                    : <span className="text-danger small">Por definir</span>}
+                    : <span className="text-danger small">{t("common.notSet")}</span>}
                 </dd>
               </dl>
 
@@ -305,7 +301,7 @@ export default async function DashboardPage({
                 className="btn btn-sm btn-outline-success rounded-3 mt-3"
               >
                 <i className="bi bi-pencil me-1"></i>
-                Editar dados
+                {t("dash.editData")}
               </Link>
             </div>
           </div>
@@ -314,35 +310,35 @@ export default async function DashboardPage({
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 className="h6 fw-bold mb-0">
-                  <i className="bi bi-receipt me-2" style={{ color: "#7c3aed" }}></i>
-                  Últimas despesas
+                  <i className="bi bi-cart-check me-2" style={{ color: "#7c3aed" }}></i>
+                  {t("dash.lastSales")}
                 </h2>
                 <Link
-                  href="/dashboard/expenses"
+                  href="/dashboard/sales"
                   className="btn btn-sm btn-outline-success rounded-3"
                 >
-                  Ver todas
+                  {t("dash.seeAll")}
                 </Link>
               </div>
 
-              {pharmacy.expenses.length === 0 ? (
-                <p className="text-secondary small mb-0">Sem despesas registadas.</p>
+              {pharmacy.sales.length === 0 ? (
+                <p className="text-secondary small mb-0">{t("dash.noSales")}</p>
               ) : (
                 <ul className="list-unstyled mb-0 small">
-                  {pharmacy.expenses.map((expense) => (
+                  {pharmacy.sales.map((sale) => (
                     <li
-                      key={expense.id}
+                      key={sale.id}
                       className="d-flex justify-content-between align-items-center py-2 border-bottom"
                     >
                       <div>
-                        <div className="fw-semibold">{expense.title}</div>
+                        <div className="fw-semibold">{t("dash.saleNumber", { id: sale.id })}</div>
                         <div className="text-secondary">
-                          {expense.category} ·{" "}
-                          {expense.expenseDate.toLocaleDateString("pt-PT")}
+                          {sale.client.name} ·{" "}
+                          {formatDate(locale, sale.createdAt)}
                         </div>
                       </div>
                       <span className="fw-bold">
-                        {Number(expense.amount).toFixed(2)}
+                        {Number(sale.total).toFixed(2)}
                       </span>
                     </li>
                   ))}

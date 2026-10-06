@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 const pharmacyImageDir = path.join(process.cwd(), "public", "images", "pharmacies");
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
@@ -48,6 +49,7 @@ async function resolvePharmacyImage(formData: FormData, currentImage?: string): 
 }
 
 export async function createPharmacy(formData: FormData): Promise<void> {
+  const t = await getT();
   await requireAdmin();
 
   const ownerId = Number(text(formData, "ownerId"));
@@ -56,18 +58,18 @@ export async function createPharmacy(formData: FormData): Promise<void> {
   const phone = text(formData, "phone");
 
   if (!ownerId || !name || !address || !phone) {
-    throw new Error("Preencha proprietário, nome, morada e telefone.");
+    throw new Error(t("error.fillOwnerNameAddressPhone"));
   }
 
   const owner = await prisma.user.findUnique({ where: { id: ownerId }, select: { id: true, role: true } });
   if (!owner || owner.role !== "owner") {
-    throw new Error("O proprietário tem de ser uma conta de farmacêutico.");
+    throw new Error(t("error.ownerMustBePharmacist"));
   }
 
   // Regra do sistema: uma farmácia por conta de farmacêutico.
   const owned = await prisma.pharmacy.count({ where: { ownerId } });
   if (owned > 0) {
-    throw new Error("Essa conta já tem uma farmácia registada (1 conta = 1 farmácia).");
+    throw new Error(t("error.ownerAlreadyHasPharmacy"));
   }
 
   const image = await resolvePharmacyImage(formData);
@@ -98,12 +100,13 @@ export async function createPharmacy(formData: FormData): Promise<void> {
 }
 
 export async function updatePharmacy(formData: FormData): Promise<void> {
+  const t = await getT();
   const admin = await requireAdmin();
   const id = Number(text(formData, "id"));
-  if (!id) throw new Error("Farmácia inválida.");
+  if (!id) throw new Error(t("error.invalidPharmacy"));
 
   const existing = await prisma.pharmacy.findUnique({ where: { id } });
-  if (!existing) throw new Error("Farmácia não encontrada.");
+  if (!existing) throw new Error(t("error.pharmacyNotFound"));
 
   const image = await resolvePharmacyImage(formData, existing.image ?? DEFAULT_IMAGE);
 
@@ -135,9 +138,14 @@ export async function updatePharmacy(formData: FormData): Promise<void> {
   redirect("/admin/pharmacies");
 }
 
-export async function deletePharmacy(formData: FormData): Promise<void> {
+export async function togglePharmacyActive(formData: FormData): Promise<void> {
+  const t = await getT();
   await requireAdmin();
-  await prisma.pharmacy.delete({ where: { id: Number(text(formData, "id")) } });
+  const id = Number(text(formData, "id"));
+  const pharmacy = await prisma.pharmacy.findUnique({ where: { id }, select: { isActive: true } });
+  if (!pharmacy) throw new Error(t("error.pharmacyNotFound"));
+
+  await prisma.pharmacy.update({ where: { id }, data: { isActive: !pharmacy.isActive } });
 
   revalidatePath("/admin/pharmacies");
   revalidatePath("/admin/validations");

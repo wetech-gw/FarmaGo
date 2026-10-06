@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { createSession, destroySession, verifyPassword } from "@/lib/auth";
+import { createSession, destroySession, homePathForRole, verifyPassword } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 export type AuthState = { error: string };
 
@@ -16,23 +17,25 @@ export async function loginAction(
   _prev: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
+  const t = await getT();
+
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const next = safeNext(formData.get("next"));
 
   if (!email || !password) {
-    return { error: "Preencha o email e a palavra-passe." };
+    return { error: t("error.loginRequired") };
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
-    return { error: "Credenciais inválidas." };
+    return { error: t("error.invalidCredentials") };
   }
 
   await createSession(user.id);
 
-  redirect(next ?? (user.role === "admin" ? "/admin/dashboard" : "/dashboard"));
+  redirect(next ?? homePathForRole(user.role));
 }
 
 export async function logoutAction(): Promise<void> {

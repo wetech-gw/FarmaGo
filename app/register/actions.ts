@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createSession, hashPassword } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 export type RegisterState = { error: string };
 
@@ -41,6 +42,7 @@ export async function registerAction(
   _prev: RegisterState,
   formData: FormData,
 ): Promise<RegisterState> {
+  const t = await getT();
   const name = text(formData, "name");
   const email = text(formData, "email").toLowerCase();
   const password = String(formData.get("password") ?? "");
@@ -54,24 +56,24 @@ export async function registerAction(
   const isGuard = text(formData, "isGuard") === "1";
 
   if (!name || !email || !password || !pharmacyName || !address || !phone) {
-    return { error: "Preencha todos os campos obrigatórios." };
+    return { error: t("error.required") };
   }
 
   if (!/^\S+@\S+\.\S+$/.test(email)) {
-    return { error: "Email inválido." };
+    return { error: t("error.invalidEmail") };
   }
 
   if (password.length < 6) {
-    return { error: "A palavra-passe deve ter pelo menos 6 caracteres." };
+    return { error: t("error.passwordTooShort") };
   }
 
   if (password !== confirm) {
-    return { error: "As palavras-passe não coincidem." };
+    return { error: t("error.passwordsMismatch") };
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return { error: "Já existe uma conta com este email." };
+    return { error: t("error.emailInUse") };
   }
 
   const image = await saveImage(formData.get("imageFile") as File | null);

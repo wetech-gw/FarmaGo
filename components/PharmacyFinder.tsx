@@ -5,6 +5,7 @@ import PharmacyCard from "@/components/PharmacyCard";
 import Footer from "@/components/Footer";
 import { getPharmacySpots } from "@/lib/pharmacies";
 import { prisma } from "@/lib/prisma";
+import { getT } from "@/lib/i18n";
 
 type PharmacyFinderProps = {
   showBreadcrumb?: boolean;
@@ -18,15 +19,16 @@ export default async function PharmacyFinder({
   showLists = true,
 }: PharmacyFinderProps) {
   const spots = await getPharmacySpots();
+  const t = await getT();
   const openCount = spots.filter((spot) => spot.isOpen).length;
   const guardCount = spots.filter((spot) => spot.isGuard).length;
   const [pharmacies, guards] = await Promise.all([
     prisma.pharmacy.findMany({
-      where: { status: "approved", isGuard: false },
+      where: { status: "approved", isGuard: false, isActive: true },
       orderBy: { id: "asc" },
     }),
     prisma.pharmacy.findMany({
-      where: { status: "approved", isGuard: true },
+      where: { status: "approved", isGuard: true, isActive: true },
       orderBy: { id: "asc" },
     }),
   ]);
@@ -45,41 +47,39 @@ export default async function PharmacyFinder({
         >
           <div className="container position-relative">
             {showBreadcrumb && (
-              <nav aria-label="breadcrumb">
+              <nav aria-label={t("common.breadcrumb")}>
                 <ol className="breadcrumb mb-2">
                   <li className="breadcrumb-item">
                     <Link href="/" className="text-white-50">
-                      Início
+                      {t("home")}
                     </Link>
                   </li>
                   <li className="breadcrumb-item active text-white" aria-current="page">
-                    Farmácias
+                    {t("pharmacies")}
                   </li>
                 </ol>
               </nav>
             )}
 
             <h1 className="fw-bold mb-2" style={{ letterSpacing: "-0.02em" }}>
-              Farmácias Abertas Perto de Si
+              {t("heroTitle")}
             </h1>
             <p className="mb-4 text-white-50" style={{ maxWidth: "62ch" }}>
-              Explore o mapa, veja o que está aberto neste momento e clique numa
-              farmácia para consultar o horário, os contactos e todos os
-              medicamentos disponíveis em stock.
+              {t("heroText")}
             </p>
 
             <div className="d-flex flex-wrap gap-2">
               <span className="px-hero-pill">
                 <i className="bi bi-check2-circle"></i>
-                {openCount} abertas agora
+                {openCount} {t("openNow")}
               </span>
               <span className="px-hero-pill">
                 <i className="bi bi-geo-alt"></i>
-                {spots.length} farmácias no mapa
+                {spots.length} {t("pharmaciesOnMap")}
               </span>
               <span className="px-hero-pill">
                 <i className="bi bi-clock-history"></i>
-                {guardCount} de plantão
+                {guardCount} {t("onGuard")}
               </span>
             </div>
           </div>
@@ -93,7 +93,7 @@ export default async function PharmacyFinder({
       <section className="container py-5">
         <div className="mb-4">
           <h2 className="fw-bold text-dark m-0 pb-2 text-uppercase" style={{ fontSize: "1.75rem" }}>
-            FARMÁCIAS
+            {t("pharmacy.section")}
           </h2>
           <div style={{ height: "4px", width: "160px", backgroundColor: "#198754" }}></div>
         </div>
@@ -109,7 +109,7 @@ export default async function PharmacyFinder({
       <section className="container py-5" style={{ backgroundColor: "#a3cfa4" }}>
         <div className="mb-4">
           <h2 className="fw-bold text-dark m-0 pb-2 text-uppercase" style={{ fontSize: "1.75rem" }}>
-            FARMÁCIAS DE PLANTÃO
+            {t("pharmacy.sectionGuards")}
           </h2>
           <div style={{ height: "4px", width: "340px", backgroundColor: "#198754" }}></div>
         </div>
@@ -133,7 +133,7 @@ export default async function PharmacyFinder({
                     className="btn btn-success w-100 rounded-pill fw-semibold mt-auto text-decoration-none d-flex align-items-center justify-content-center"
                   >
                     <i className="bi bi-arrow-right-circle me-2"></i>
-                    Mais detalhes
+                    {t("common.details")}
                   </Link>
                 </div>
               </div>

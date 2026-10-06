@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requirePharmacy } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 const medicationImageDir = path.join(process.cwd(), "public", "images", "medications");
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
@@ -27,6 +28,7 @@ async function saveImage(file: File | null): Promise<string | null> {
 }
 
 export async function saveMedication(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
 
   const id = formData.get("id") ? Number(formData.get("id")) : null;
@@ -36,12 +38,12 @@ export async function saveMedication(formData: FormData): Promise<void> {
   const needsPrescription = formData.get("needsPrescription") === "on";
 
   if (!name || !dosage) {
-    throw new Error("Preencha o nome e a dosagem.");
+    throw new Error(t("error.nameAndDosageRequired"));
   }
 
   if (id) {
     const found = await prisma.medication.findFirst({ where: { id, pharmacyId } });
-    if (!found) throw new Error("Medicamento não pertence à sua farmácia.");
+    if (!found) throw new Error(t("error.medicationNotYours"));
 
     const uploaded = await saveImage(formData.get("imageFile") as File | null);
     const imageUrl = String(formData.get("imageUrl") ?? "").trim();
@@ -65,11 +67,12 @@ export async function saveMedication(formData: FormData): Promise<void> {
 }
 
 export async function deleteMedication(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
   const id = Number(formData.get("id"));
 
   const found = await prisma.medication.findFirst({ where: { id, pharmacyId } });
-  if (!found) throw new Error("Medicamento não pertence à sua farmácia.");
+  if (!found) throw new Error(t("error.medicationNotYours"));
 
   await prisma.medication.delete({ where: { id } });
 

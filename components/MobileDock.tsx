@@ -2,23 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useT } from "@/components/I18nProvider";
+import type { TKey } from "@/lib/i18n-core";
 
-const dockItems = [
-  { href: "/", icon: "bi-house", label: "Início" },
-  { href: "/medications", icon: "bi-capsule", label: "Medicamentos" },
-  { href: "/pharmacies", icon: "bi-geo-alt", label: "Farmácias" },
-  { href: "/guards", icon: "bi-shield-plus", label: "Plantão" },
-  { href: "/dashboard", icon: "bi-person", label: "Conta" },
+const dockItems: { href: string; icon: string; labelKey: TKey }[] = [
+  { href: "/", icon: "bi-house", labelKey: "home" },
+  { href: "/medications", icon: "bi-capsule", labelKey: "medications" },
+  { href: "/pharmacies", icon: "bi-geo-alt", labelKey: "pharmacies" },
+  { href: "/guards", icon: "bi-shield-plus", labelKey: "guard" },
+  { href: "/dashboard", icon: "bi-person", labelKey: "summary" },
 ];
 
 export default function MobileDock() {
   const pathname = usePathname();
+  const t = useT();
 
   return (
-    <nav
-      className="mobile-dock"
-      aria-label="Navegação principal"
-    >
+    <nav className="mobile-dock" aria-label={t("common.mainNavigation")}>
       <div className="mobile-dock-inner">
         {dockItems.map((item) => {
           const isActive =
@@ -33,7 +33,7 @@ export default function MobileDock() {
               aria-current={isActive ? "page" : undefined}
             >
               <i className={`bi ${item.icon}`} />
-              <span>{item.label}</span>
+              <span>{t(item.labelKey)}</span>
             </Link>
           );
         })}

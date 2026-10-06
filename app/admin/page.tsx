@@ -1,15 +1,17 @@
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
 import AdminPharmacyMap from "@/components/admin/AdminPharmacyMap";
+import { requireAdmin } from "@/lib/auth";
+import { formatNumber, getI18n } from "@/lib/i18n";
 import type { PharmacySpot } from "@/types/pharmacy";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
+  const { locale, t } = await getI18n();
   await requireAdmin();
 
   const pharmacies = await prisma.pharmacy.findMany({
-    where: { status: "approved" },
+    where: { status: "approved", isActive: true },
     include: {
       owner: { select: { name: true, email: true } },
       stocks: {
@@ -54,9 +56,13 @@ export default async function AdminPage() {
   return (
     <>
       <div className="mb-4">
-        <h1 className="fw-bold m-0 fs-2">Farmácias Validadas</h1>
+        <h1 className="fw-bold m-0 fs-2">{t("admin.validatedPharmacies")}</h1>
         <p className="text-muted small m-0">
-          {pharmacies.length} farmácias · {totalMedications} medicamentos · {totalUnits} unidades em stock
+          {t("admin.statsLine", {
+            pharmacies: pharmacies.length,
+            medications: totalMedications,
+            units: formatNumber(locale, totalUnits),
+          })}
         </p>
       </div>
 
@@ -64,7 +70,7 @@ export default async function AdminPage() {
         <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
           <h6 className="fw-bold m-0">
             <i className="bi bi-geo-alt me-2" style={{ color: "#dc2626" }}></i>
-            Mapa de Farmácias
+            {t("admin.mapTitle")}
           </h6>
         </div>
         <div className="card-body" style={{ height: "400px" }}>
@@ -77,12 +83,12 @@ export default async function AdminPage() {
           <table className="table table-hover mb-0" style={{ fontSize: "0.9rem" }}>
             <thead className="border-bottom">
               <tr className="text-secondary">
-                <th className="fw-medium ps-4 py-3">Farmácia</th>
-                <th className="fw-medium py-3">Proprietário</th>
-                <th className="fw-medium py-3">Contacto</th>
-                <th className="fw-medium py-3">Medicamentos</th>
-                <th className="fw-medium py-3 text-center">Stock</th>
-                <th className="fw-medium py-3 text-center pe-4">Estado</th>
+                <th className="fw-medium ps-4 py-3">{t("common.pharmacy")}</th>
+                <th className="fw-medium py-3">{t("common.owner")}</th>
+                <th className="fw-medium py-3">{t("admin.thContact")}</th>
+                <th className="fw-medium py-3">{t("medications")}</th>
+                <th className="fw-medium py-3 text-center">{t("stock")}</th>
+                <th className="fw-medium py-3 text-center pe-4">{t("common.status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -118,16 +124,18 @@ export default async function AdminPage() {
                           )}
                         </div>
                       ) : (
-                        <span className="text-muted small">Sem stock</span>
+                        <span className="text-muted small">{t("admin.noStockShort")}</span>
                       )}
                     </td>
                     <td className="py-3 text-center">
-                      <span className="badge bg-light text-dark border">{totalQty} unid.</span>
+                      <span className="badge bg-light text-dark border">
+                        {t("admin.unitsShort", { count: formatNumber(locale, totalQty) })}
+                      </span>
                     </td>
                     <td className="py-3 text-center pe-4">
                       {p.isOpen
-                        ? <span className="badge rounded-pill" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>Aberta</span>
-                        : <span className="badge rounded-pill" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>Fechada</span>}
+                        ? <span className="badge rounded-pill" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>{t("common.openBadge")}</span>
+                        : <span className="badge rounded-pill" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>{t("common.closedBadge")}</span>}
                     </td>
                   </tr>
                 );

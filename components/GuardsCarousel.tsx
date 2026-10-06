@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useT } from "@/components/I18nProvider";
 
 interface Pharmacy {
   id: number;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function GuardsCarousel({ pharmacies }: Props) {
+  const t = useT();
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -36,7 +38,7 @@ export default function GuardsCarousel({ pharmacies }: Props) {
       <div className="container position-relative">
         <div className="mb-4">
           <h2 className="fw-bold text-dark m-0 pb-2 text-uppercase" style={{ fontSize: "1.75rem" }}>
-            FARMÁCIAS DE PLANTÃO
+            {t("pharmacy.sectionGuards")}
           </h2>
           <div style={{ height: "4px", width: "340px", backgroundColor: "#198754" }}></div>
         </div>
@@ -61,7 +63,7 @@ export default function GuardsCarousel({ pharmacies }: Props) {
                     className="btn btn-success w-100 rounded-pill fw-semibold mt-auto text-decoration-none d-flex align-items-center justify-content-center"
                   >
                     <i className="bi bi-arrow-right-circle me-2"></i>
-                    Mais detalhes
+                    {t("common.moreDetails")}
                   </Link>
                 </div>
               </div>
@@ -73,7 +75,7 @@ export default function GuardsCarousel({ pharmacies }: Props) {
           type="button" onClick={handlePrev}
           className="btn btn-success rounded-circle position-absolute top-50 translate-middle-y shadow"
           style={{ width: 40, height: 40, left: -20, zIndex: 10 }}
-          aria-label="Anterior"
+          aria-label={t("common.previous")}
         >
           <i className="bi bi-chevron-left text-white" aria-hidden="true"></i>
         </button>
@@ -82,7 +84,7 @@ export default function GuardsCarousel({ pharmacies }: Props) {
           type="button" onClick={handleNext}
           className="btn btn-success rounded-circle position-absolute top-50 translate-middle-y shadow"
           style={{ width: 40, height: 40, right: -20, zIndex: 10 }}
-          aria-label="Seguinte"
+          aria-label={t("common.next")}
         >
           <i className="bi bi-chevron-right text-white" aria-hidden="true"></i>
         </button>
@@ -94,4 +96,3 @@ export default function GuardsCarousel({ pharmacies }: Props) {
     </section>
   );
 }
-

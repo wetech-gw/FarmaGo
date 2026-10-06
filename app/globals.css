@@ -1724,6 +1724,7 @@ body {
 
   .px-explorer-map {
     min-height: 45vh;
+    order: -1;
   }
 
   /* Painel de detalhes no fluxo normal da página (a página rola até ao rodapé) */
@@ -2047,3 +2048,129 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+@media print {
+  aside, .d-lg-none, .btn { display: none !important; }
+  body { background: #fff !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   PWA: botão flutuante de instalação e WhatsApp
+   --------------------------------------------------------------------------- */
+
+/* Botão flutuante de instalação: desktop canto inferior esquerdo */
+.pwa-install-fab-wrap {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 1041;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: min(300px, calc(100vw - 2rem));
+}
+
+.pwa-install-fab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #0f8a0e;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.pwa-install-fab:hover {
+  background: #0d6b0c;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.pwa-install-fab:active {
+  transform: translateY(0);
+}
+
+/* Painel com os passos manuais (quando não há prompt nativo) */
+.pwa-install-fab__popover {
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.8rem;
+  background: #14532d;
+  color: #fff;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
+}
+
+.pwa-install-fab__close {
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.pwa-install-fab__close:hover {
+  color: #fff;
+}
+
+/* Botão flutuante do WhatsApp */
+.pwa-whatsapp-fab {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1040;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  font-size: 1.6rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
+}
+
+.pwa-whatsapp-fab:hover {
+  color: #fff;
+  transform: scale(1.06);
+}
+
+@media (max-width: 991.98px) {
+  /* Acima do dock de navegação, que tem ~96px de altura em mobile. */
+  .pwa-install-fab-wrap,
+  .pwa-whatsapp-fab {
+    bottom: calc(108px + env(safe-area-inset-bottom));
+  }
+
+  .pwa-install-fab-wrap {
+    left: 0.75rem;
+  }
+
+  .pwa-install-fab {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .pwa-whatsapp-fab {
+    right: 0.75rem;
+    width: 48px;
+    height: 48px;
+    font-size: 1.45rem;
+  }
+}
+
+@media print {
+  .pwa-install-fab, .pwa-install-fab__popover, .pwa-whatsapp-fab { display: none !important; }
+}
+
+@media print { .mobile-dock { display: none !important; } }

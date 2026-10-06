@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 export async function approvePharmacy(formData: FormData): Promise<void> {
+  const t = await getT();
   const admin = await requireAdmin();
   const id = Number(formData.get("id"));
 
@@ -13,7 +15,7 @@ export async function approvePharmacy(formData: FormData): Promise<void> {
     where: { id },
     select: { id: true, latitude: true, longitude: true, name: true },
   });
-  if (!pharmacy) throw new Error("Farmácia não encontrada.");
+  if (!pharmacy) throw new Error(t("error.pharmacyNotFound"));
 
   await prisma.pharmacy.update({
     where: { id },
@@ -33,11 +35,12 @@ export async function approvePharmacy(formData: FormData): Promise<void> {
 }
 
 export async function rejectPharmacy(formData: FormData): Promise<void> {
+  const t = await getT();
   const admin = await requireAdmin();
   const id = Number(formData.get("id"));
   const reason = String(formData.get("reason") ?? "").trim();
 
-  if (!reason) throw new Error("Indique o motivo da rejeição.");
+  if (!reason) throw new Error(t("error.rejectionReasonRequired"));
 
   await prisma.pharmacy.update({
     where: { id },

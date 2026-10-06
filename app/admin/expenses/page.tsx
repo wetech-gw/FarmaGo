@@ -1,7 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import { formatCurrency, formatDate, getI18n } from "@/lib/i18n";
+import type { TKey } from "@/lib/i18n-core";
 
 export const dynamic = "force-dynamic";
+
+const CATEGORY_KEYS = {
+  infraestrutura: "expense.categoryInfra",
+  pessoal: "expense.categoryStaff",
+  stock: "expense.categoryStock",
+  outros: "expense.categoryOther",
+} as const satisfies Record<string, TKey>;
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
   infraestrutura: { bg: "#e0e7ff", text: "#3730a3" },
@@ -11,6 +20,7 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 };
 
 export default async function AdminExpensesPage() {
+  const { locale, t } = await getI18n();
   await requireAdmin();
 
   const expenses = await prisma.expense.findMany({
@@ -30,8 +40,10 @@ export default async function AdminExpensesPage() {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 className="fw-bold m-0 fs-2">Despesas</h1>
-          <p className="text-muted small m-0">{expenses.length} registos</p>
+          <h1 className="fw-bold m-0 fs-2">{t("dash.expensesTitle")}</h1>
+          <p className="text-muted small m-0">
+            {t("admin.expensesSubtitle", { count: expenses.length })}
+          </p>
         </div>
       </div>
 
@@ -42,13 +54,13 @@ export default async function AdminExpensesPage() {
           return (
             <div key={cat} className="col-6 col-xl-3">
               <div className="card border-0 rounded-4 p-3 shadow-sm bg-white">
-                <p className="text-secondary small mb-1 text-capitalize fw-medium">{cat}</p>
-                <h5 className="fw-bold m-0">
-                  {total.toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 })}
-                </h5>
+                <p className="text-secondary small mb-1 text-capitalize fw-medium">
+                  {cat in CATEGORY_KEYS ? t(CATEGORY_KEYS[cat as keyof typeof CATEGORY_KEYS]) : cat}
+                </p>
+                <h5 className="fw-bold m-0">{formatCurrency(locale, total)}</h5>
                 <div className="mt-2">
                   <span className="badge rounded-pill" style={{ backgroundColor: colors.bg, color: colors.text }}>
-                    {((total / grandTotal) * 100).toFixed(0)}% do total
+                    {t("admin.percentOfTotal", { percent: ((total / grandTotal) * 100).toFixed(0) })}
                   </span>
                 </div>
               </div>
@@ -63,11 +75,11 @@ export default async function AdminExpensesPage() {
           <table className="table table-hover mb-0" style={{ fontSize: "0.9rem" }}>
             <thead className="border-bottom">
               <tr className="text-secondary">
-                <th className="fw-medium ps-4 py-3">Título</th>
-                <th className="fw-medium py-3">Farmácia</th>
-                <th className="fw-medium py-3">Categoria</th>
-                <th className="fw-medium py-3">Data</th>
-                <th className="fw-medium py-3 text-end pe-4">Valor</th>
+                <th className="fw-medium ps-4 py-3">{t("common.description")}</th>
+                <th className="fw-medium py-3">{t("common.pharmacy")}</th>
+                <th className="fw-medium py-3">{t("common.category")}</th>
+                <th className="fw-medium py-3">{t("common.date")}</th>
+                <th className="fw-medium py-3 text-end pe-4">{t("common.price")}</th>
               </tr>
             </thead>
             <tbody>
@@ -79,14 +91,14 @@ export default async function AdminExpensesPage() {
                     <td className="py-3 text-muted">{e.pharmacy.name}</td>
                     <td className="py-3">
                       <span className="badge rounded-pill text-capitalize" style={{ backgroundColor: colors.bg, color: colors.text }}>
-                        {e.category}
+                        {e.category in CATEGORY_KEYS ? t(CATEGORY_KEYS[e.category as keyof typeof CATEGORY_KEYS]) : e.category}
                       </span>
                     </td>
                     <td className="py-3 text-muted">
-                      {new Date(e.expenseDate).toLocaleDateString("pt-PT")}
+                      {formatDate(locale, e.expenseDate)}
                     </td>
                     <td className="py-3 text-end pe-4 fw-semibold">
-                      {Number(e.amount).toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 })}
+                      {formatCurrency(locale, Number(e.amount))}
                     </td>
                   </tr>
                 );
@@ -94,9 +106,9 @@ export default async function AdminExpensesPage() {
             </tbody>
             <tfoot className="border-top">
               <tr>
-                <td colSpan={4} className="ps-4 py-3 fw-bold text-dark">Total Geral</td>
+                <td colSpan={4} className="ps-4 py-3 fw-bold text-dark">{t("admin.grandTotal")}</td>
                 <td className="py-3 text-end pe-4 fw-bold text-dark">
-                  {grandTotal.toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 })}
+                  {formatCurrency(locale, grandTotal)}
                 </td>
               </tr>
             </tfoot>

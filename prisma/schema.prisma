@@ -46,6 +46,7 @@ model Pharmacy {
   longitude       Float?
   isGuard         Boolean         @default(false) @map("is_guard")
   isOpen          Boolean         @default(true) @map("is_open")
+  isActive        Boolean         @default(true) @map("is_active")
   status          PharmacyStatus  @default(pending)
   validatedAt     DateTime?       @map("validated_at")
   validatedById   Int?            @map("validated_by_id")
@@ -59,6 +60,7 @@ model Pharmacy {
   validatedBy     User?           @relation("PharmacyValidator", fields: [validatedById], references: [id])
   stocks          PharmacyStock[]
   sales           Sale[]
+  notifications   Notification[]
 
   @@index([status])
   @@index([ownerId], map: "pharmacies_owner_id_fkey")
@@ -128,6 +130,19 @@ model Client {
   @@map("clients")
 }
 
+model Notification {
+  id         Int      @id @default(autoincrement())
+  pharmacyId Int      @unique @map("pharmacy_id")
+  message    String   @db.Text
+  isRead     Boolean   @default(false) @map("is_read")
+  reviewedAt DateTime? @map("reviewed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  pharmacy   Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@index([pharmacyId])
+  @@map("notifications")
+}
+
 model Sale {
   id         Int        @id @default(autoincrement())
   pharmacyId Int        @map("pharmacy_id")
@@ -161,6 +176,22 @@ model SaleItem {
 enum Role {
   admin
   owner
+  inspecao
+}
+
+/// Mensagens enviadas pelo formulário público de contactos.
+model ContactMessage {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(150)
+  email     String?   @db.VarChar(150)
+  phone     String?   @db.VarChar(30)
+  subject   String?   @db.VarChar(150)
+  message   String    @db.Text
+  isRead    Boolean   @default(false) @map("is_read")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([isRead, createdAt])
+  @@map("contact_messages")
 }
 
 enum PharmacyStatus {

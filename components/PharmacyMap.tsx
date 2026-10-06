@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type * as Leaflet from "leaflet";
 import { BISSAU_CENTER, DEFAULT_ZOOM, escapeHtml } from "@/lib/geo";
 import { loadLeaflet } from "@/lib/leaflet";
+import { useT } from "@/components/I18nProvider";
 import type { PharmacySpot } from "@/types/pharmacy";
 
 interface UserLocation {
@@ -44,6 +45,7 @@ export default function PharmacyMap({
   className = "",
   zoom = DEFAULT_ZOOM,
 }: Props) {
+  const t = useT();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const leafletRef = useRef<typeof Leaflet | null>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
@@ -265,7 +267,7 @@ export default function PharmacyMap({
       },
     )
       .addTo(map)
-      .bindTooltip("A sua localização", { direction: "top" });
+      .bindTooltip(t("explorer.yourLocation"), { direction: "top" });
 
     if (userLocation.accuracy) {
       userCircleRef.current = L.circle(
@@ -284,7 +286,7 @@ export default function PharmacyMap({
       [userLocation.latitude, userLocation.longitude],
       Math.max(map.getZoom(), 14),
     );
-  }, [userLocation, ready]);
+  }, [userLocation, ready, t]);
 
   return (
     <div className="px-map-wrap">
@@ -292,24 +294,22 @@ export default function PharmacyMap({
         ref={containerRef}
         className={`px-map ${className}`}
         role="application"
-        aria-label="Mapa de farmácias"
+        aria-label={t("explorer.mapLabel")}
       />
 
       {ready && (
         <span className="px-map-count" aria-live="polite">
-          {markerCount} marcadores
+          {t("explorer.markerCount", { count: markerCount })}
         </span>
       )}
 
       {error && (
         <div className="px-map-error" role="alert">
           <i className="bi bi-exclamation-triangle"></i>
-          <strong>Não foi possível carregar o mapa</strong>
+          <strong>{t("explorer.mapLoadError")}</strong>
           <span>{error}</span>
           <span className="px-map-error__hint">
-            Confirme a ligação à internet (mosaicos de{" "}
-            <code>tile.openstreetmap.org</code>) e que o Leaflet está instalado
-            (<code>npm i leaflet</code>).
+            {t("explorer.mapLoadErrorHint")}
           </span>
         </div>
       )}

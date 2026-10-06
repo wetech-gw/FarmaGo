@@ -1,18 +1,34 @@
 import Navbar from "@/components/Navbar";
 import AboutSection from "@/components/AboutSection";
 import AboutImage from "@/components/AboutImage";
-import PharmacyCard from "@/components/PharmacyCard";
-import Link from "next/link";
 import Footer from "@/components/Footer";
-import { prisma } from "@/lib/prisma";
+import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
-  const [pharmacies, guards] = await Promise.all([
-    prisma.pharmacy.findMany({ where: { isGuard: false }, orderBy: { id: "asc" } }),
-    prisma.pharmacy.findMany({ where: { isGuard: true },  orderBy: { id: "asc" } }),
-  ]);
+  const t = await getT();
+
+  const steps = [
+    {
+      img: "/images/mapa.png",
+      icon: "bi-geo-alt-fill",
+      title: t("aboutPage.card1Title"),
+      text: t("aboutPage.card1Text"),
+    },
+    {
+      img: "/images/detalhes.png",
+      icon: "bi-capsule-pill",
+      title: t("aboutPage.card2Title"),
+      text: t("aboutPage.card2Text"),
+    },
+    {
+      img: "/images/plantao.jpg",
+      icon: "bi-clock-history",
+      title: t("aboutPage.card3Title"),
+      text: t("aboutPage.card3Text"),
+    },
+  ];
 
   return (
     <>
@@ -20,35 +36,15 @@ export default async function AboutPage() {
       <AboutSection />
       <section className="container py-5 howto">
         <div className="text-center mb-5">
-          <span className="howto-eyebrow">Como funciona</span>
-          <h2 className="fw-bold mt-2">FarmaGo na palma da mão</h2>
+          <span className="howto-eyebrow">{t("aboutPage.eyebrow")}</span>
+          <h2 className="fw-bold mt-2">{t("aboutPage.title")}</h2>
           <p className="text-muted mx-auto" style={{ maxWidth: "56ch" }}>
-            Encontre a farmácia mais próxima, consulte medicamentos e detalhes em
-            poucos toques.
+            {t("aboutPage.subtitle")}
           </p>
         </div>
 
         <div className="row g-4">
-          {[
-            {
-              img: "/images/mapa.png",
-              icon: "bi-geo-alt-fill",
-              title: "Farmácias perto de si",
-              text: "Veja no mapa as farmácias mais próximas abertas neste momento.",
-            },
-            {
-              img: "/images/detalhes.png",
-              icon: "bi-capsule-pill",
-              title: "Detalhes do medicamento",
-              text: "Consulte preço, stock e farmácias que vendem cada medicamento.",
-            },
-            {
-              img: "/images/plantao.jpg",
-              icon: "bi-clock-history",
-              title: "Farmácias de plantão",
-              text: "Saiba sempre que farmácia está de plantão ao seu lado.",
-            },
-          ].map((item) => (
+          {steps.map((item) => (
             <div key={item.title} className="col-md-4">
               <div className="howto-card">
                 <AboutImage src={item.img} alt={item.title} icon={item.icon} />

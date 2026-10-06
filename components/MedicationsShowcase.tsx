@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import MedicationCard from "./MedicationCard";
+import { useI18n } from "@/components/I18nProvider";
 import type {
   AvailabilityFilter,
   MedicationListItem,
@@ -21,16 +22,16 @@ interface Props {
   description?: string;
 }
 
-const AVAILABILITY_FILTERS: { value: AvailabilityFilter; label: string; icon: string }[] = [
-  { value: "all", label: "Todos", icon: "bi-grid-3x3-gap" },
-  { value: "available", label: "Disponíveis", icon: "bi-check2-circle" },
-  { value: "unavailable", label: "Indisponíveis", icon: "bi-dash-circle" },
+const AVAILABILITY_FILTERS: { value: AvailabilityFilter; icon: string }[] = [
+  { value: "all", icon: "bi-grid-3x3-gap" },
+  { value: "available", icon: "bi-check2-circle" },
+  { value: "unavailable", icon: "bi-dash-circle" },
 ];
 
-const SORTS: { value: MedicationSort; label: string }[] = [
-  { value: "name", label: "Nome (A–Z)" },
-  { value: "name-desc", label: "Nome (Z–A)" },
-  { value: "availability", label: "Mais disponíveis" },
+const SORTS: { value: MedicationSort }[] = [
+  { value: "name" },
+  { value: "name-desc" },
+  { value: "availability" },
 ];
 
 function normalize(value: string): string {
@@ -46,11 +47,12 @@ export default function MedicationsShowcase({
   showFilters = true,
   showAllLink = false,
   allHref = "/medications",
-  eyebrow = "Catálogo Pharmax",
-  title = "Medicamentos",
-  accent = "disponíveis agora",
-  description = "Consulte o catálogo completo, veja em que farmácias cada medicamento está disponível e encontre o mais próximo de si.",
+  eyebrow,
+  title,
+  accent,
+  description,
 }: Props) {
+  const { locale, t } = useI18n();
   const [query, setQuery] = useState("");
   const [availability, setAvailability] = useState<AvailabilityFilter>("all");
   const [sort, setSort] = useState<MedicationSort>("name");
@@ -61,6 +63,12 @@ export default function MedicationsShowcase({
     if (value === "available") return availableCount;
     if (value === "unavailable") return medications.length - availableCount;
     return medications.length;
+  };
+
+  const labelFor = (value: AvailabilityFilter) => {
+    if (value === "available") return t("meds.filterAvailable");
+    if (value === "unavailable") return t("meds.filterUnavailable");
+    return t("meds.filterAll");
   };
 
   const results = useMemo(() => {
@@ -84,16 +92,21 @@ export default function MedicationsShowcase({
     const sorted = [...filtered];
     sorted.sort((a, b) => {
       if (sort === "availability") {
-        return b.pharmacyCount - a.pharmacyCount || a.name.localeCompare(b.name, "pt");
+        return b.pharmacyCount - a.pharmacyCount || a.name.localeCompare(b.name, locale);
       }
       const direction = sort === "name-desc" ? -1 : 1;
-      return a.name.localeCompare(b.name, "pt") * direction;
+      return a.name.localeCompare(b.name, locale) * direction;
     });
 
     return typeof limit === "number" ? sorted.slice(0, limit) : sorted;
-  }, [medications, query, availability, sort, limit]);
+  }, [medications, query, availability, sort, limit, locale]);
 
   const hasFilters = query.trim().length > 0 || availability !== "all";
+
+  const resetFilters = () => {
+    setQuery("");
+    setAvailability("all");
+  };
 
   return (
     <section className="med-showcase">
@@ -101,23 +114,23 @@ export default function MedicationsShowcase({
         <header className="med-showcase-head">
           <span className="med-eyebrow">
             <i className="bi bi-capsule-pill" aria-hidden="true"></i>
-            {eyebrow}
+            {eyebrow ?? t("medsPage.eyebrow")}
           </span>
 
           <h2 className="med-showcase-title">
-            {title} <span className="med-showcase-accent">{accent}</span>
+            {title ?? t("medsPage.showcaseTitle")} <span className="med-showcase-accent">{accent ?? t("medsPage.showcaseAccent")}</span>
           </h2>
 
-          <p className="med-showcase-desc">{description}</p>
+          <p className="med-showcase-desc">{description ?? t("medsPage.showcaseDescription")}</p>
 
           <div className="med-stats">
             <span className="med-stat">
               <i className="bi bi-journal-medical" aria-hidden="true"></i>
-              <strong>{medications.length}</strong> no catálogo
+              <strong>{medications.length}</strong> {t("meds.inCatalog")}
             </span>
             <span className="med-stat med-stat--ok">
               <i className="bi bi-check2-circle" aria-hidden="true"></i>
-              <strong>{availableCount}</strong> disponíveis
+              <strong>{availableCount}</strong> {t("meds.availableCount")}
             </span>
           </div>
         </header>
@@ -130,22 +143,22 @@ export default function MedicationsShowcase({
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Pesquisar medicamento ou dosagem..."
-                aria-label="Pesquisar medicamento ou dosagem"
+                placeholder={t("meds.searchPlaceholder")}
+                aria-label={t("meds.searchLabel")}
               />
               {query && (
                 <button
                   type="button"
                   className="med-search-clear"
                   onClick={() => setQuery("")}
-                  aria-label="Limpar pesquisa"
+                  aria-label={t("meds.clearSearch")}
                 >
                   <i className="bi bi-x-lg" aria-hidden="true"></i>
                 </button>
               )}
             </div>
 
-            <div className="med-chips" role="group" aria-label="Filtrar por disponibilidade">
+            <div className="med-chips" role="group" aria-label={t("meds.filterGroup")}>
               {AVAILABILITY_FILTERS.map((filter) => (
                 <button
                   key={filter.value}
@@ -155,7 +168,7 @@ export default function MedicationsShowcase({
                   aria-pressed={availability === filter.value}
                 >
                   <i className={`bi ${filter.icon}`} aria-hidden="true"></i>
-                  {filter.label}
+                  {labelFor(filter.value)}
                   <span className="med-chip-count">{countFor(filter.value)}</span>
                 </button>
               ))}
@@ -163,7 +176,7 @@ export default function MedicationsShowcase({
 
             <div className="med-sort">
               <label className="visually-hidden" htmlFor="med-sort">
-                Ordenar medicamentos
+                {t("meds.sortLabel")}
               </label>
               <i className="bi bi-arrow-down-up" aria-hidden="true"></i>
               <select
@@ -174,7 +187,7 @@ export default function MedicationsShowcase({
               >
                 {SORTS.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.label}
+                    {t(option.value === "name" ? "meds.sortNameAsc" : option.value === "name-desc" ? "meds.sortNameDesc" : "meds.sortAvailability")}
                   </option>
                 ))}
               </select>
@@ -185,20 +198,13 @@ export default function MedicationsShowcase({
         <div className="med-results-bar">
           <span aria-live="polite">
             {results.length === medications.length
-              ? `${results.length} medicamento${results.length === 1 ? "" : "s"}`
-              : `${results.length} de ${medications.length} medicamentos`}
+              ? t("meds.resultsCount", { count: results.length })
+              : t("meds.resultsFiltered", { count: results.length, total: medications.length })}
           </span>
           {hasFilters && (
-            <button
-              type="button"
-              className="med-reset"
-              onClick={() => {
-                setQuery("");
-                setAvailability("all");
-              }}
-            >
+            <button type="button" className="med-reset" onClick={resetFilters}>
               <i className="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
-              Limpar filtros
+              {t("meds.clearFilters")}
             </button>
           )}
         </div>
@@ -206,20 +212,14 @@ export default function MedicationsShowcase({
         {results.length === 0 ? (
           <div className="med-empty">
             <i className="bi bi-search-heart" aria-hidden="true"></i>
-            <h3>Nenhum medicamento encontrado</h3>
-            <p>
-              Tente pesquisar outro nome ou dosagem, ou volte a mostrar todos os
-              medicamentos do catálogo.
-            </p>
+            <h3>{t("meds.emptyTitle")}</h3>
+            <p>{t("meds.emptyText")}</p>
             <button
               type="button"
               className="med-cta med-cta--inline"
-              onClick={() => {
-                setQuery("");
-                setAvailability("all");
-              }}
+              onClick={resetFilters}
             >
-              Ver todo o catálogo
+              {t("meds.seeAllCatalog")}
               <i className="bi bi-arrow-right" aria-hidden="true"></i>
             </button>
           </div>
@@ -234,12 +234,12 @@ export default function MedicationsShowcase({
         {showAllLink && (
           <div className="med-showcase-foot">
             <Link href={allHref} className="med-cta med-cta--lg">
-              Ver catálogo completo
+              {t("meds.seeFullCatalog")}
               <i className="bi bi-arrow-right" aria-hidden="true"></i>
             </Link>
             <Link href="/pharmacies" className="med-foot-link">
               <i className="bi bi-geo-alt" aria-hidden="true"></i>
-              Encontrar farmácia perto de si
+              {t("meds.findPharmacyNear")}
             </Link>
           </div>
         )}

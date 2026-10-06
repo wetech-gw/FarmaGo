@@ -3,15 +3,17 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { saveExpense, deleteExpense } from "../actions";
+import { formatDate, formatNumber, getI18n } from "@/lib/i18n";
+import type { TKey } from "@/lib/i18n-core";
 
 export const dynamic = "force-dynamic";
 
-const categories = [
-  { value: "infraestrutura", label: "Infraestrutura" },
-  { value: "pessoal",         label: "Pessoal" },
-  { value: "stock",           label: "Stock" },
-  { value: "outros",          label: "Outros" },
-];
+const CATEGORY_KEYS = {
+  infraestrutura: "expense.categoryInfra",
+  pessoal: "expense.categoryStaff",
+  stock: "expense.categoryStock",
+  outros: "expense.categoryOther",
+} as const satisfies Record<string, TKey>;
 
 export default async function DashboardExpensesPage({
   searchParams,
@@ -19,6 +21,7 @@ export default async function DashboardExpensesPage({
   searchParams: Promise<{ edit?: string }>;
 }) {
   const { edit } = await searchParams;
+  const { locale, t } = await getI18n();
   const user = await requireUser();
   if (user.role !== "owner") redirect("/admin/dashboard");
 
@@ -34,12 +37,16 @@ export default async function DashboardExpensesPage({
   const editing = editingId ? expenses.find((expense) => expense.id === editingId) : null;
   const total = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
 
+  const categories = (Object.keys(CATEGORY_KEYS) as (keyof typeof CATEGORY_KEYS)[]).map(
+    (value) => ({ value, label: t(CATEGORY_KEYS[value]) }),
+  );
+
   return (
     <>
       <div className="mb-4">
-        <h1 className="h4 fw-bold mb-1">Despesas</h1>
+        <h1 className="h4 fw-bold mb-1">{t("dash.expensesTitle")}</h1>
         <p className="text-secondary small mb-0">
-          Custos da farmácia. Total registado: <strong>{total.toFixed(2)}</strong>
+          {t("dash.expensesSubtitle", { total: formatNumber(locale, total, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}
         </p>
       </div>
 
@@ -48,7 +55,7 @@ export default async function DashboardExpensesPage({
           <h2 className="h6 fw-bold mb-3">
             <i className={`bi ${editing ? "bi-pencil-square" : "bi-plus-circle"} me-2`}
               style={{ color: editing ? "#ea580c" : "#10b981" }}></i>
-            {editing ? `Editar — ${editing.title}` : "Nova despesa"}
+            {editing ? t("dash.editPrefix", { name: editing.title }) : t("dash.newExpense")}
           </h2>
 
           <form action={saveExpense} className="row g-3 align-items-end">
@@ -56,7 +63,7 @@ export default async function DashboardExpensesPage({
 
             <div className="col-12 col-md-4">
               <label className="form-label small fw-medium text-secondary" htmlFor="ex-title">
-                Descrição
+                {t("common.description")}
               </label>
               <input
                 id="ex-title"
@@ -70,7 +77,7 @@ export default async function DashboardExpensesPage({
 
             <div className="col-6 col-md-2">
               <label className="form-label small fw-medium text-secondary" htmlFor="ex-cat">
-                Categoria
+                {t("common.category")}
               </label>
               <select
                 id="ex-cat"
@@ -88,7 +95,7 @@ export default async function DashboardExpensesPage({
 
             <div className="col-6 col-md-2">
               <label className="form-label small fw-medium text-secondary" htmlFor="ex-amount">
-                Valor
+                {t("common.price")}
               </label>
               <input
                 id="ex-amount"
@@ -103,7 +110,7 @@ export default async function DashboardExpensesPage({
 
             <div className="col-6 col-md-2">
               <label className="form-label small fw-medium text-secondary" htmlFor="ex-date">
-                Data
+                {t("common.date")}
               </label>
               <input
                 id="ex-date"
@@ -118,13 +125,14 @@ export default async function DashboardExpensesPage({
             </div>
 
             <div className="col-6 col-md-2 d-flex gap-2">
-              <button type="submit" className="btn btn-success rounded-3 px-3 py-2 w-100">
+              <button type="submit" className="btn btn-success rounded-3 px-3 py-2 w-100" aria-label={t("common.save")}>
                 <i className="bi bi-check-lg"></i>
               </button>
               {editing && (
                 <Link
                   href="/dashboard/expenses"
                   className="btn btn-outline-secondary rounded-3 px-3 py-2"
+                  aria-label={t("common.cancel")}
                 >
                   <i className="bi bi-x-lg"></i>
                 </Link>
@@ -137,16 +145,16 @@ export default async function DashboardExpensesPage({
       <div className="card border-0 rounded-4 shadow-sm bg-white">
         <div className="card-body">
           {expenses.length === 0 ? (
-            <p className="text-secondary small mb-0">Sem despesas registadas.</p>
+            <p className="text-secondary small mb-0">{t("dash.noExpenses")}</p>
           ) : (
             <div className="table-responsive">
               <table className="table align-middle">
                 <thead>
                   <tr className="small text-secondary">
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Data</th>
-                    <th className="text-end">Valor</th>
+                    <th>{t("common.description")}</th>
+                    <th>{t("common.category")}</th>
+                    <th>{t("common.date")}</th>
+                    <th className="text-end">{t("common.price")}</th>
                     <th style={{ width: 120 }} />
                   </tr>
                 </thead>
@@ -154,17 +162,22 @@ export default async function DashboardExpensesPage({
                   {expenses.map((expense) => (
                     <tr key={expense.id}>
                       <td className="fw-semibold">{expense.title}</td>
-                      <td className="small text-secondary">{expense.category}</td>
+                      <td className="small text-secondary">
+                        {expense.category in CATEGORY_KEYS
+                          ? t(CATEGORY_KEYS[expense.category as keyof typeof CATEGORY_KEYS])
+                          : expense.category}
+                      </td>
                       <td className="small">
-                        {expense.expenseDate.toLocaleDateString("pt-PT")}
+                        {formatDate(locale, expense.expenseDate)}
                       </td>
                       <td className="text-end fw-bold">
-                        {Number(expense.amount).toFixed(2)}
+                        {formatNumber(locale, Number(expense.amount), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                       <td className="text-end">
                         <Link
                           href={`/dashboard/expenses?edit=${expense.id}`}
                           className="btn btn-sm btn-outline-success rounded-3 me-1"
+                          aria-label={t("common.edit")}
                         >
                           <i className="bi bi-pencil"></i>
                         </Link>
@@ -173,7 +186,7 @@ export default async function DashboardExpensesPage({
                           <button
                             type="submit"
                             className="btn btn-sm btn-outline-danger rounded-3"
-                            aria-label="Remover"
+                            aria-label={t("common.remove")}
                           >
                             <i className="bi bi-trash"></i>
                           </button>

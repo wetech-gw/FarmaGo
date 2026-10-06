@@ -1,48 +1,39 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getT } from "@/lib/i18n";
 
-export const metadata = {
-  title: "Política de Privacidade | FarmaGo",
-};
+export const dynamic = "force-dynamic";
 
-export default function PrivacyPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t("privacy.metaTitle") };
+}
+
+export default async function PrivacyPage() {
+  const t = await getT();
+
+  const sections = [
+    { heading: t("privacy.h2_1"), body: t("privacy.p1") },
+    { heading: t("privacy.h2_2"), body: t("privacy.p2") },
+    { heading: t("privacy.h2_3"), body: t("privacy.p3") },
+    { heading: t("privacy.h2_4"), body: t("privacy.p4") },
+    { heading: t("privacy.h2_5"), body: t("privacy.p5") },
+  ];
+
   return (
     <>
       <Navbar />
       <main className="container py-5" style={{ maxWidth: "820px" }}>
-        <h1 className="fw-bold mb-4">Política de Privacidade</h1>
-        <p className="text-muted">Última atualização: outubro de 2026.</p>
+        <h1 className="fw-bold mb-4">{t("privacy.title")}</h1>
+        <p className="text-muted">{t("privacy.updated")}</p>
 
-        <h2 className="h5 fw-bold mt-4">1. Dados que recolhemos</h2>
-        <p>
-          Recolhemos os dados necessários ao funcionamento da plataforma, como nome,
-          email, dados de contacto e localização aproximada quando o utilizador a
-          partilha para encontrar farmácias próximas.
-        </p>
-
-        <h2 className="h5 fw-bold mt-4">2. Como usamos os dados</h2>
-        <p>
-          Os dados são usados para gerir contas, apresentar farmácias e medicamentos,
-          melhorar o serviço e comunicar informação relevante sobre a conta.
-        </p>
-
-        <h2 className="h5 fw-bold mt-4">3. Partilha de dados</h2>
-        <p>
-          Não vendemos dados pessoais. Apenas partilhamos informação com parceiros
-          estritamente necessários à prestação do serviço.
-        </p>
-
-        <h2 className="h5 fw-bold mt-4">4. Segurança</h2>
-        <p>
-          Aplicamos medidas técnicas e organizativas para proteger os dados contra
-          acessos não autorizados.
-        </p>
-
-        <h2 className="h5 fw-bold mt-4">5. Os seus direitos</h2>
-        <p>
-          Pode solicitar acesso, correção ou eliminação dos seus dados contactando-nos
-          através da página de contactos.
-        </p>
+        {sections.map((section) => (
+          <section key={section.heading}>
+            <h2 className="h5 fw-bold mt-4">{section.heading}</h2>
+            <p>{section.body}</p>
+          </section>
+        ))}
       </main>
       <Footer />
     </>

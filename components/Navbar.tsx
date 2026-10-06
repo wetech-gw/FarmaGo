@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 import NavbarCollapse from "@/components/NavbarCollapse";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 
 export default async function Navbar() {
   const user = await getCurrentUser();
+  const t = await getT();
   return (
     <>
       {/* Wrapper para evitar que o conteúdo da página fique escondido debaixo do menu fixo */}
@@ -28,16 +31,18 @@ export default async function Navbar() {
                 {/* 3. Espaçador Direito */}
                 <div className="flex-grow-1"></div>
                 <Link href="/" className="nav-link text-secondary fw-medium small hover-success px-0">
-                  Início
+                  {t("home")}
                 </Link>
 
                 <Link href="/about" className="nav-link text-secondary fw-medium small hover-success px-0">
-                  Quem somos nós?
+                  {t("about")}
                 </Link>
 
                 <Link href="/contact" className="nav-link text-secondary fw-medium small hover-success px-0">
-                  Contate-nos
+                  {t("contact")}
                 </Link>
+
+                <LocaleSwitcher />
 
                 {/* Conta: dashboard se houver sessão, login/registo caso contrário */}
                 {user ? (
@@ -55,16 +60,16 @@ export default async function Navbar() {
                     <Link
                       href="/login"
                       className="nav-link text-secondary fw-medium small hover-success px-0"
-                    >
-                      Entrar
-                    </Link>
+                      >
+                        {t("login")}
+                      </Link>
 
                     <Link
                       href="/register"
                       className="btn btn-success rounded-pill px-3 py-1 fw-medium small"
-                    >
-                      Registar farmácia
-                    </Link>
+                      >
+                        {t("registerPharmacy")}
+                      </Link>
                   </>
                 )}
 
@@ -86,19 +91,19 @@ export default async function Navbar() {
             <ul className="nav justify-content-lg-center flex-nowrap overflow-x-auto py-2 text-nowrap gap-3 gap-lg-4">
               <li className="nav-item">
                 <Link href="/medications" className="nav-link text-dark fw-semibold small text-uppercase tracking-wider p-0">
-                  ● Medicamentos
+                  ● {t("medications")}
                 </Link>
               </li>
 
               <li className="nav-item">
                 <Link href="/pharmacies" className="nav-link text-dark fw-semibold small text-uppercase tracking-wider p-0">
-                  ● Farmácias
+                  ● {t("pharmacies")}
                 </Link>
               </li>
 
               <li className="nav-item">
                 <Link href="/guards" className="nav-link text-danger fw-bold small text-uppercase tracking-wider p-0">
-                  ● Farmácias de Plantão
+                  ● {t("guardPharmacies")}
                 </Link>
               </li>
 

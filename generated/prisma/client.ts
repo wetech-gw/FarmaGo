@@ -77,6 +77,11 @@ export type Expense = Prisma.ExpenseModel
  */
 export type Client = Prisma.ClientModel
 /**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model Sale
  * 
  */
@@ -86,3 +91,8 @@ export type Sale = Prisma.SaleModel
  * 
  */
 export type SaleItem = Prisma.SaleItemModel
+/**
+ * Model ContactMessage
+ * Mensagens enviadas pelo formulário público de contactos.
+ */
+export type ContactMessage = Prisma.ContactMessageModel

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/components/I18nProvider";
 import { medicationPlaceholder } from "@/lib/placeholders";
 
 interface Medication {
@@ -21,12 +22,10 @@ interface Props {
   showAvailability?: boolean;
 }
 
-function placeholderImage(name: string): string {
-  return medicationPlaceholder(name);
-}
-
 export default function MedicationCard({ med, href, showAvailability = true }: Props) {
-  const src = med.image ?? placeholderImage(med.name);
+  const t = useT();
+
+  const src = med.image ?? medicationPlaceholder(med.name);
   const hasAvailability = showAvailability && typeof med.inStock === "boolean";
   const detailHref = href ?? `/medications/${med.id}`;
 
@@ -39,7 +38,7 @@ export default function MedicationCard({ med, href, showAvailability = true }: P
           loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = placeholderImage(med.name);
+            e.currentTarget.src = medicationPlaceholder(med.name);
           }}
         />
 
@@ -48,12 +47,12 @@ export default function MedicationCard({ med, href, showAvailability = true }: P
             className={`med-badge ${med.inStock ? "med-badge--ok" : "med-badge--off"}`}
           >
             <span className="med-dot" aria-hidden="true"></span>
-            {med.inStock ? "Disponível" : "Indisponível"}
+            {med.inStock ? t("common.available") : t("common.unavailable")}
           </span>
         )}
 
         {med.totalQuantity !== undefined && med.totalQuantity > 0 && (
-          <span className="med-stock" title={`${med.totalQuantity} unidades em stock`}>
+          <span className="med-stock" title={t("meds.unitsInStock", { count: med.totalQuantity })}>
             <i className="bi bi-box-seam" aria-hidden="true"></i>
             {med.totalQuantity}
           </span>
@@ -75,19 +74,20 @@ export default function MedicationCard({ med, href, showAvailability = true }: P
           {med.needsPrescription && (
             <span className="d-inline-flex align-items-center gap-1 text-warning fw-semibold">
               <i className="bi bi-file-earmark-medical" aria-hidden="true"></i>
-              Receita obrigatória
+              {t("meds.prescriptionRequired")}
             </span>
           )}
           {med.needsPrescription && (
             <span className="med-meta-sep" aria-hidden="true"></span>
-          )}          <span className="d-inline-flex align-items-center gap-1">
+          )}
+          <span className="d-inline-flex align-items-center gap-1">
             <i className="bi bi-capsule" aria-hidden="true"></i>
             {med.dosage}
           </span>
         </div>
 
         <Link href={detailHref} className="med-cta">
-          Ver detalhes
+          {t("meds.seeDetails")}
           <i className="bi bi-arrow-right" aria-hidden="true"></i>
         </Link>
       </div>

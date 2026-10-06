@@ -50,6 +50,17 @@ async function main() {
     },
   });
 
+  // --- Inspeção (regula os plantões das farmácias) ---
+  await prisma.user.create({
+    data: {
+      name:        "Inspeção Farmacêutica",
+      email:       "inspecao@farmago.com",
+      passwordHash,
+      role:        "inspecao",
+      createdAt:   new Date("2026-01-05T09:00:00Z"),
+    },
+  });
+
   // --- Medicamentos ---
   const [panadol, doliprane, antidol, smectalia, imodium, hydroxyd, amoxil, brufen] =
     await Promise.all([

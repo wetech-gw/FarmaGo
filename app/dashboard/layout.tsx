@@ -14,13 +14,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
     where: { id: user.pharmacyId ?? -1 },
     select: { id: true, name: true, status: true, isOpen: true, rejectionReason: true },
   });
+  const unreadNotifications = user.pharmacyId
+    ? await prisma.notification.count({ where: { pharmacyId: user.pharmacyId, isRead: false } })
+    : 0;
 
   return (
-    <div className="d-flex bg-light min-vh-100">
+    <div className="d-flex flex-column flex-lg-row bg-light min-vh-100">
       <DashboardSidebar
         user={user}
         pharmacy={pharmacy}
         logoutAction={logoutAction}
+        unreadNotifications={unreadNotifications}
       />
 
       <main className="flex-grow-1 p-4 p-lg-5 overflow-auto">{children}</main>

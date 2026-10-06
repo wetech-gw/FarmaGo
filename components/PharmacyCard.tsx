@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useT } from "@/components/I18nProvider";
 
 interface Pharmacy {
   id: number;
@@ -13,6 +16,8 @@ interface Props {
 }
 
 export default function PharmacyCard({ pharmacy }: Props) {
+  const t = useT();
+
   return (
     <div className="card shadow-sm h-100 border-0">
       <div style={{ height: "150px" }}>
@@ -33,10 +38,9 @@ export default function PharmacyCard({ pharmacy }: Props) {
           className="btn btn-success w-100 rounded-pill fw-semibold mt-auto"
         >
           <i className="bi bi-arrow-right-circle me-2"></i>
-          Mais detalhes
+          {t("common.details")}
         </Link>
       </div>
     </div>
   );
 }
-

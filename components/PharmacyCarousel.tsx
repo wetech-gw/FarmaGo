@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import PharmacyCard from "./PharmacyCard";
+import { useT } from "@/components/I18nProvider";
 
 interface Pharmacy {
   id: number;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function PharmacyCarousel({ pharmacies }: Props) {
+  const t = useT();
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -36,7 +38,7 @@ export default function PharmacyCarousel({ pharmacies }: Props) {
     <section className="container py-5 position-relative">
       <div className="mb-4">
         <h2 className="fw-bold text-dark m-0 pb-2 text-uppercase" style={{ fontSize: "1.75rem" }}>
-          FARMÁCIAS
+          {t("pharmacy.section")}
         </h2>
         <div style={{ height: "4px", width: "160px", backgroundColor: "#198754" }}></div>
       </div>
@@ -53,7 +55,7 @@ export default function PharmacyCarousel({ pharmacies }: Props) {
         type="button" onClick={handlePrev}
         className="btn btn-success rounded-circle position-absolute top-50 translate-middle-y shadow"
         style={{ width: 40, height: 40, left: -20, zIndex: 10 }}
-        aria-label="Anterior"
+        aria-label={t("common.previous")}
       >
         <i className="bi bi-chevron-left text-white" aria-hidden="true"></i>
       </button>
@@ -62,7 +64,7 @@ export default function PharmacyCarousel({ pharmacies }: Props) {
         type="button" onClick={handleNext}
         className="btn btn-success rounded-circle position-absolute top-50 translate-middle-y shadow"
         style={{ width: 40, height: 40, right: -20, zIndex: 10 }}
-        aria-label="Seguinte"
+        aria-label={t("common.next")}
       >
         <i className="bi bi-chevron-right text-white" aria-hidden="true"></i>
       </button>

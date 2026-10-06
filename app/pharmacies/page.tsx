@@ -1,12 +1,13 @@
+import type { Metadata } from "next";
 import PharmacyFinder from "@/components/PharmacyFinder";
+import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Farmácias Abertas | FarmaGo",
-  description:
-    "Mapa interativo com todas as farmácias abertas, informações de contacto e medicamentos disponíveis em cada uma.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t("heroTitle"), description: t("heroText") };
+}
 
 export default function PharmaciesPage() {
   return <PharmacyFinder showBreadcrumb showExplorer={false} />;

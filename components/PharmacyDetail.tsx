@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { formatDistance, googleMapsUrl } from "@/lib/geo";
 import MedicationCard from "./MedicationCard";
+import { useT } from "@/components/I18nProvider";
 import { medicationPlaceholder, pharmacyPlaceholder } from "@/lib/placeholders";
 import type { PharmacySpot } from "@/types/pharmacy";
 
@@ -25,6 +26,8 @@ export default function PharmacyDetail({
   medsLayout = "list",
   showFullPageLink = true,
 }: Props) {
+  const t = useT();
+
   const term = medQuery.trim().toLowerCase();
   const meds = spot.medications.filter(
     (med) =>
@@ -50,14 +53,14 @@ export default function PharmacyDetail({
           type="button"
           className="px-detail-close"
           onClick={onClose}
-          aria-label="Fechar detalhes"
+          aria-label={t("detail.close")}
         >
           <i className="bi bi-x-lg" aria-hidden="true"></i>
         </button>
 
         <span className={`px-detail-status px-detail-status--${spot.isOpen ? "on" : "off"}`}>
           <span className="px-open-dot" aria-hidden="true"></span>
-          {spot.isOpen ? "Aberta agora" : "Fechada"}
+          {spot.isOpen ? t("detail.openNow") : t("common.closedBadge")}
         </span>
       </div>
 
@@ -66,12 +69,12 @@ export default function PharmacyDetail({
           <h2 className="px-detail-name">{spot.name}</h2>
           <div className="px-detail-sub">
             {spot.isGuard && (
-              <span className="px-spot-tag px-spot-tag--guard">Farmácia de plantão</span>
+              <span className="px-spot-tag px-spot-tag--guard">{t("detail.guardTag")}</span>
             )}
             {distanceKm !== null && (
               <span className="px-detail-distance">
                 <i className="bi bi-signpost-split" aria-hidden="true"></i>
-                a {formatDistance(distanceKm)} de si
+                {t("detail.distanceAway", { distance: formatDistance(distanceKm) })}
               </span>
             )}
           </div>
@@ -80,7 +83,7 @@ export default function PharmacyDetail({
         <div className="px-detail-actions">
           <a href={`tel:${spot.phone}`} className="px-detail-btn px-detail-btn--primary">
             <i className="bi bi-telephone-fill" aria-hidden="true"></i>
-            Ligar agora
+            {t("detail.callNow")}
           </a>
           <a
             href={googleMapsUrl(spot.latitude, spot.longitude, spot.address)}
@@ -89,7 +92,7 @@ export default function PharmacyDetail({
             className="px-detail-btn px-detail-btn--ghost"
           >
             <i className="bi bi-sign-turn-right-fill" aria-hidden="true"></i>
-            Direções
+            {t("detail.directions")}
           </a>
         </div>
 
@@ -98,7 +101,7 @@ export default function PharmacyDetail({
           <div className="px-detail-row">
             <dt>
               <i className="bi bi-geo-alt-fill" aria-hidden="true"></i>
-              Morada
+              {t("common.address")}
             </dt>
             <dd>{spot.address}</dd>
           </div>
@@ -106,7 +109,7 @@ export default function PharmacyDetail({
           <div className="px-detail-row">
             <dt>
               <i className="bi bi-clock-fill" aria-hidden="true"></i>
-              Horário
+              {t("common.hours")}
             </dt>
             <dd>
               {spot.schedule} · <strong>{spot.hours}</strong>
@@ -116,7 +119,7 @@ export default function PharmacyDetail({
           <div className="px-detail-row">
             <dt>
               <i className="bi bi-telephone-fill" aria-hidden="true"></i>
-              Telefone
+              {t("common.phone")}
             </dt>
             <dd>
               <a href={`tel:${spot.phone}`}>{spot.phone}</a>
@@ -127,7 +130,7 @@ export default function PharmacyDetail({
             <div className="px-detail-row">
               <dt>
                 <i className="bi bi-pin-map-fill" aria-hidden="true"></i>
-                Coordenadas
+                {t("detail.coordinates")}
               </dt>
               <dd>
                 {spot.latitude.toFixed(5)}, {spot.longitude?.toFixed(5)}
@@ -140,7 +143,7 @@ export default function PharmacyDetail({
           <div className="px-detail-meds-head">
             <h3>
               <i className="bi bi-capsule-pill" aria-hidden="true"></i>
-              Medicamentos disponíveis
+              {t("detail.availableMedications")}
             </h3>
             <span className="px-detail-meds-count">{spot.medications.length}</span>
           </div>
@@ -152,14 +155,14 @@ export default function PharmacyDetail({
                 type="search"
                 value={medQuery}
                 onChange={(e) => onMedQueryChange(e.target.value)}
-                placeholder="Filtrar medicamentos desta farmácia..."
-                aria-label="Filtrar medicamentos desta farmácia"
+                placeholder={t("detail.filterPlaceholder")}
+                aria-label={t("detail.filterLabel")}
               />
               {medQuery && (
                 <button
                   type="button"
                   onClick={() => onMedQueryChange("")}
-                  aria-label="Limpar filtro de medicamentos"
+                  aria-label={t("detail.clearMedFilter")}
                 >
                   <i className="bi bi-x-lg" aria-hidden="true"></i>
                 </button>
@@ -170,12 +173,12 @@ export default function PharmacyDetail({
           {spot.medications.length === 0 ? (
             <p className="px-detail-empty">
               <i className="bi bi-inbox" aria-hidden="true"></i>
-              Esta farmácia ainda não tem medicamentos registados em stock.
+              {t("detail.noMedications")}
             </p>
           ) : meds.length === 0 ? (
             <p className="px-detail-empty">
               <i className="bi bi-search" aria-hidden="true"></i>
-              Nenhum medicamento corresponde a “{medQuery}”.
+              {t("detail.noMatch", { query: medQuery })}
             </p>
           ) : (
             medsLayout === "grid" ? (
@@ -233,7 +236,7 @@ export default function PharmacyDetail({
         {showFullPageLink && (
         <div className="px-detail-foot">
           <Link href={`/pharmacies/${spot.id}`} className="px-detail-link">
-            Ver página completa da farmácia
+            {t("detail.fullPageLink")}
             <i className="bi bi-arrow-right" aria-hidden="true"></i>
           </Link>
         </div>

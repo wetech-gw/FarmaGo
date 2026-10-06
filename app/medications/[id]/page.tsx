@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
 import { prisma } from "@/lib/prisma";
 import { medicationPlaceholder } from "@/lib/placeholders";
+import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +13,23 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const t = await getT();
+
+  const medication = await prisma.medication.findUnique({
+    where: { id: parseInt(id, 10) },
+    select: { name: true, dosage: true },
+  });
+
+  if (!medication) return { title: t("medDetail.notFound") };
+
+  return { title: `${medication.name} ${medication.dosage} | FarmaGo` };
+}
+
 export default async function MedicationDetailPage({ params }: Props) {
   const { id } = await params;
+  const t = await getT();
   const medication = await prisma.medication.findUnique({
     where: { id: parseInt(id, 10) },
     include: {
@@ -29,9 +46,9 @@ export default async function MedicationDetailPage({ params }: Props) {
       <>
         <Navbar />
         <div className="container py-5 text-center">
-          <h3 className="text-danger">Medicamento não encontrado</h3>
+          <h3 className="text-danger">{t("medDetail.notFound")}</h3>
           <Link href="/medications" className="btn btn-success mt-3">
-            Voltar ao catálogo
+            {t("medDetail.backToCatalog")}
           </Link>
         </div>
         <Footer />
@@ -53,7 +70,7 @@ export default async function MedicationDetailPage({ params }: Props) {
       <Navbar />
       <main className="bg-light min-vh-100 py-5">
         <div className="container" style={{ maxWidth: "820px" }}>
-          <nav aria-label="breadcrumb">
+          <nav aria-label={t("common.breadcrumb")}>
             <ol className="breadcrumb">
               <li className="breadcrumb-item">
                 <BackButton />
@@ -87,31 +104,31 @@ export default async function MedicationDetailPage({ params }: Props) {
                 {medication.needsPrescription && (
                   <p className="text-warning fw-semibold">
                     <i className="bi bi-file-earmark-medical me-1"></i>
-                    Medicamento sujeito a receita médica.
+                    {t("medDetail.prescriptionNotice")}
                   </p>
                 )}
 
                 <div className="d-flex flex-wrap gap-4 mb-4">
                   <div>
-                    <small className="text-muted d-block">Estado</small>
+                    <small className="text-muted d-block">{t("common.status")}</small>
                     <strong className={totalQuantity > 0 ? "text-success" : "text-danger"}>
-                      {totalQuantity > 0 ? "Disponível" : "Indisponível"}
+                      {totalQuantity > 0 ? t("common.available") : t("common.unavailable")}
                     </strong>
                   </div>
                   <div>
-                    <small className="text-muted d-block">Preço desde</small>
+                    <small className="text-muted d-block">{t("medDetail.priceFrom")}</small>
                     <strong className="text-success">
-                      {minPrice !== null ? `${minPrice.toFixed(0)} FCFA` : "—"}
+                      {minPrice !== null ? `${minPrice.toFixed(0)} FCFA` : t("common.notAvailableYet")}
                     </strong>
                   </div>
                   <div>
-                    <small className="text-muted d-block">Unidades em stock</small>
+                    <small className="text-muted d-block">{t("medDetail.unitsInStock")}</small>
                     <strong>{totalQuantity}</strong>
                   </div>
                 </div>
 
                 <h2 className="fs-6 fw-bold text-uppercase text-muted">
-                  Disponível em {medication.stocks.length} farmácia(s)
+                  {t("medDetail.availableIn", { count: medication.stocks.length })}
                 </h2>
                 <ul className="list-group list-group-flush">
                   {medication.stocks.map((stock) => (
@@ -132,7 +149,7 @@ export default async function MedicationDetailPage({ params }: Props) {
                   ))}
                   {medication.stocks.length === 0 && (
                     <li className="list-group-item px-0 text-muted">
-                      Sem stock nas farmácias parceiras neste momento.
+                      {t("medDetail.noStock")}
                     </li>
                   )}
                 </ul>

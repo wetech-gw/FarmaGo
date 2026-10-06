@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { dateInDays, exactDaysUntil, now } from "@/lib/dates";
+import { dateInDays, exactDaysUntil } from "@/lib/dates";
+import { formatDate, formatNumber, getI18n } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
+  const { locale, t } = await getI18n();
   await requireAdmin();
 
   // Dados reais da BD
@@ -16,25 +18,18 @@ export default async function AdminDashboard() {
     totalUsers,
     totalStock,
     expiringStock,
-    recentExpenses,
     pharmaciesWithOwners,
   ] = await Promise.all([
     prisma.pharmacy.count({ where: { isGuard: false } }),
     prisma.pharmacy.count({ where: { isGuard: true  } }),
     prisma.medication.count(),
-    prisma.user.count({ where: { role: "owner" } }),
+    prisma.user.count(),
     prisma.pharmacyStock.aggregate({ _sum: { quantity: true } }),
     // Stock a caducar nos próximos 90 dias
     prisma.pharmacyStock.findMany({
       where: { expiryDate: { lte: dateInDays(90) } },
       include: { pharmacy: true, medication: true },
       orderBy: { expiryDate: "asc" },
-      take: 5,
-    }),
-    // Últimas despesas
-    prisma.expense.findMany({
-      include: { pharmacy: true },
-      orderBy: { expenseDate: "desc" },
       take: 5,
     }),
     // Farmácias com proprietários e contagem de stock
@@ -53,21 +48,51 @@ export default async function AdminDashboard() {
   // Farmácias registadas pelo público que ainda esperam visita presencial
   const pendingCount = await prisma.pharmacy.count({ where: { status: "pending" } });
 
-  // Despesas totais do mês actual
-  const currentDate = now();
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const monthlyExpenses = await prisma.expense.aggregate({
-    where: { expenseDate: { gte: startOfMonth } },
-    _sum: { amount: true },
-  });
-  const totalMonthlyExpenses = Number(monthlyExpenses._sum.amount ?? 0);
+  const cards = [
+    {
+      label: t("pharmacies"),
+      value: totalPharmacies,
+      sub: t("admin.seeAll"),
+      href: "/admin/pharmacies",
+      icon: "bi-building-add",
+      iconBg: "#fdf2f8",
+      iconColor: "#db2777",
+    },
+    {
+      label: t("medications"),
+      value: totalMedications,
+      sub: t("admin.dashUnitsInStock", { count: formatNumber(locale, totalQuantidade) }),
+      href: "/admin/medications",
+      icon: "bi-capsule",
+      iconBg: "#e0e7ff",
+      iconColor: "#4f46e5",
+    },
+    {
+      label: t("guard"),
+      value: totalGuards,
+      sub: t("admin.dashGuardSeeAll"),
+      href: "/admin/pharmacies?type=guard",
+      icon: "bi-clock",
+      iconBg: "#e0f2fe",
+      iconColor: "#0891b2",
+    },
+    {
+      label: t("users"),
+      value: totalUsers,
+      sub: t("admin.dashUsersSeeAll"),
+      href: "/admin/users",
+      icon: "bi-people",
+      iconBg: "#ffedd5",
+      iconColor: "#ea580c",
+    },
+  ];
 
   return (
     <>
       {/* Cabeçalho */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div className="d-flex align-items-center gap-2">
-          <h1 className="fw-bold m-0 fs-2">Dashboard</h1>
+          <h1 className="fw-bold m-0 fs-2">{t("dashboard")}</h1>
           <i className="bi bi-speedometer2 text-dark fs-3"></i>
         </div>
         <div className="d-flex gap-2">
@@ -78,34 +103,15 @@ export default async function AdminDashboard() {
               style={{ backgroundColor: "#ea580c", borderColor: "#ea580c" }}
             >
               <i className="bi bi-patch-check small"></i>
-              Validar {pendingCount} {pendingCount === 1 ? "farmácia" : "farmácias"}
+              {t("admin.dashValidate", { count: pendingCount })}
             </Link>
           )}
-          <Link
-            href="/admin/pharmacies"
-            className="btn rounded-3 px-3 py-2 fw-medium d-flex align-items-center gap-2 small text-white"
-            style={{ backgroundColor: "#4f46e5", borderColor: "#4f46e5" }}
-          >
-            <i className="bi bi-plus-lg small"></i> Nova Farmácia
-          </Link>
-          <Link
-            href="/admin/medications"
-            className="btn rounded-3 px-3 py-2 fw-medium d-flex align-items-center gap-2 small text-white"
-            style={{ backgroundColor: "#ea580c", borderColor: "#ea580c" }}
-          >
-            <i className="bi bi-capsule small"></i> Novo Medicamento
-          </Link>
         </div>
       </div>
 
       {/* 4 Cards de Stats */}
       <div className="row g-3 mb-4">
-        {[
-          { label: "Farmácias",         value: totalPharmacies,  sub: "Ver todas →",               href: "/admin/pharmacies",           icon: "bi-building-add",    iconBg: "#fdf2f8", iconColor: "#db2777" },
-          { label: "Medicamentos",      value: totalMedications, sub: `${totalQuantidade.toLocaleString()} unid. em stock`, href: "/admin/medications", icon: "bi-capsule",         iconBg: "#e0e7ff", iconColor: "#4f46e5" },
-          { label: "Plantão",           value: totalGuards,      sub: "Ver plantões →",             href: "/admin/pharmacies?type=guard", icon: "bi-clock",           iconBg: "#e0f2fe", iconColor: "#0891b2" },
-          { label: "Despesas (mês)",    value: totalMonthlyExpenses.toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 }), sub: "Ver despesas →", href: "/admin/expenses", icon: "bi-receipt-cutoff", iconBg: "#ffedd5", iconColor: "#ea580c" },
-        ].map((card) => (
+        {cards.map((card) => (
           <div key={card.label} className="col-12 col-sm-6 col-xl-3">
             <div className="card border-0 rounded-4 px-3 py-3 shadow-sm bg-white h-100">
               <div className="d-flex justify-content-between align-items-center">
@@ -135,19 +141,19 @@ export default async function AdminDashboard() {
         <div className="col-12 col-xl-7">
           <div className="card border-0 rounded-4 shadow-sm bg-white">
             <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-              <h6 className="fw-bold m-0">Farmácias Registadas</h6>
-              <Link href="/admin/pharmacies" className="text-primary small text-decoration-none">Ver todas</Link>
+              <h6 className="fw-bold m-0">{t("admin.dashRegisteredPharmacies")}</h6>
+              <Link href="/admin/pharmacies" className="text-primary small text-decoration-none">{t("admin.seeAll")}</Link>
             </div>
             <div className="card-body px-0 pb-0">
               <div className="table-responsive">
                 <table className="table table-hover mb-0" style={{ fontSize: "0.9rem" }}>
                   <thead className="border-bottom">
                     <tr className="text-secondary">
-                      <th className="fw-medium ps-4 py-3">Farmácia</th>
-                      <th className="fw-medium py-3">Proprietário</th>
-                      <th className="fw-medium py-3 text-center">Stock</th>
-                      <th className="fw-medium py-3 text-center">Plantão</th>
-                      <th className="fw-medium py-3 text-center">Estado</th>
+                      <th className="fw-medium ps-4 py-3">{t("common.pharmacy")}</th>
+                      <th className="fw-medium py-3">{t("common.owner")}</th>
+                      <th className="fw-medium py-3 text-center">{t("stock")}</th>
+                      <th className="fw-medium py-3 text-center">{t("guard")}</th>
+                      <th className="fw-medium py-3 text-center">{t("common.status")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -164,18 +170,20 @@ export default async function AdminDashboard() {
                           <div className="text-muted small">{p.owner.email}</div>
                         </td>
                         <td className="py-3 text-center">
-                          <span className="badge bg-light text-dark border">{p._count.stocks} itens</span>
+                          <span className="badge bg-light text-dark border">
+                            {t("admin.itemsBadge", { count: p._count.stocks })}
+                          </span>
                         </td>
                         <td className="py-3 text-center">
                           {p.isGuard
-                            ? <span className="badge rounded-pill" style={{ backgroundColor: "#e0f2fe", color: "#0369a1" }}>Sim</span>
-                            : <span className="badge rounded-pill bg-light text-secondary">Não</span>
+                            ? <span className="badge rounded-pill" style={{ backgroundColor: "#e0f2fe", color: "#0369a1" }}>{t("common.yes")}</span>
+                            : <span className="badge rounded-pill bg-light text-secondary">{t("common.no")}</span>
                           }
                         </td>
                         <td className="py-3 text-center">
                           {p.isOpen
-                            ? <span className="badge rounded-pill" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>Aberta</span>
-                            : <span className="badge rounded-pill" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>Fechada</span>
+                            ? <span className="badge rounded-pill" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>{t("common.openBadge")}</span>
+                            : <span className="badge rounded-pill" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>{t("common.closedBadge")}</span>
                           }
                         </td>
                       </tr>
@@ -193,13 +201,13 @@ export default async function AdminDashboard() {
             <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
               <h6 className="fw-bold m-0">
                 <i className="bi bi-exclamation-triangle text-warning me-2"></i>
-                Stock a Caducar (90 dias)
+                {t("admin.dashExpiringSoon")}
               </h6>
-              <Link href="/admin/stock" className="text-primary small text-decoration-none">Ver tudo</Link>
+              <Link href="/admin/stock" className="text-primary small text-decoration-none">{t("admin.seeEverything")}</Link>
             </div>
             <div className="card-body">
               {expiringStock.length === 0 ? (
-                <p className="text-muted small text-center mt-4">Nenhum stock a caducar em breve.</p>
+                <p className="text-muted small text-center mt-4">{t("admin.dashNoExpiring")}</p>
               ) : (
                 <div className="d-flex flex-column gap-3">
                   {expiringStock.map((s) => {
@@ -215,10 +223,10 @@ export default async function AdminDashboard() {
                         </div>
                         <div className="text-end">
                           <div className={`fw-bold small ${isUrgent ? "text-danger" : "text-warning"}`}>
-                            {daysLeft} dias
+                            {t("common.daysCount", { count: daysLeft })}
                           </div>
                           <div className="text-muted" style={{ fontSize: "0.75rem" }}>
-                            {new Date(s.expiryDate).toLocaleDateString("pt-PT")}
+                            {formatDate(locale, s.expiryDate)}
                           </div>
                         </div>
                       </div>
@@ -231,43 +239,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Últimas Despesas */}
-      <div className="card border-0 rounded-4 shadow-sm bg-white">
-        <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-          <h6 className="fw-bold m-0">Últimas Despesas</h6>
-          <Link href="/admin/expenses" className="text-primary small text-decoration-none">Ver todas</Link>
-        </div>
-        <div className="card-body px-0 pb-0">
-          <div className="table-responsive">
-            <table className="table table-hover mb-0" style={{ fontSize: "0.9rem" }}>
-              <thead className="border-bottom">
-                <tr className="text-secondary">
-                  <th className="fw-medium ps-4 py-3">Título</th>
-                  <th className="fw-medium py-3">Farmácia</th>
-                  <th className="fw-medium py-3">Categoria</th>
-                  <th className="fw-medium py-3">Data</th>
-                  <th className="fw-medium py-3 text-end pe-4">Valor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentExpenses.map((e) => (
-                  <tr key={e.id}>
-                    <td className="ps-4 py-3 fw-medium">{e.title}</td>
-                    <td className="py-3 text-muted">{e.pharmacy.name}</td>
-                    <td className="py-3">
-                      <span className="badge rounded-pill bg-light text-secondary border text-capitalize">{e.category}</span>
-                    </td>
-                    <td className="py-3 text-muted">{new Date(e.expenseDate).toLocaleDateString("pt-PT")}</td>
-                    <td className="py-3 text-end pe-4 fw-semibold">
-                      {Number(e.amount).toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </>
   );
 }

@@ -2,11 +2,13 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { useT } from "@/components/I18nProvider";
 import { loginAction, type AuthState } from "@/app/login/actions";
 
 const initialState: AuthState = { error: "" };
 
 export default function LoginForm({ next }: { next: string }) {
+  const t = useT();
   const [state, formAction, pending] = useActionState(loginAction, initialState);
 
   return (
@@ -15,7 +17,7 @@ export default function LoginForm({ next }: { next: string }) {
 
       <div className="mb-3">
         <label className="form-label small fw-medium text-secondary" htmlFor="email">
-          Email
+          {t("common.email")}
         </label>
         <input
           id="email"
@@ -30,7 +32,7 @@ export default function LoginForm({ next }: { next: string }) {
 
       <div className="mb-3">
         <label className="form-label small fw-medium text-secondary" htmlFor="password">
-          Palavra-passe
+          {t("login.password")}
         </label>
         <input
           id="password"
@@ -45,7 +47,7 @@ export default function LoginForm({ next }: { next: string }) {
 
         <div className="text-end mb-3">
           <Link href="/forgot-password" className="small text-decoration-none">
-            Esqueceu a palavra-passe?
+            {t("login.forgotPassword")}
           </Link>
         </div>
 
@@ -65,12 +67,12 @@ export default function LoginForm({ next }: { next: string }) {
         {pending ? (
           <>
             <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-            A entrar…
+            {t("login.signingIn")}
           </>
         ) : (
           <>
             <i className="bi bi-box-arrow-in-right me-1"></i>
-            Entrar
+            {t("login")}
           </>
         )}
       </button>

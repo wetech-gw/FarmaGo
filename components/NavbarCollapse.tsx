@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useT } from "@/components/I18nProvider";
 
 export default function NavbarCollapse({ children }: { children: React.ReactNode }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function NavbarCollapse({ children }: { children: React.ReactNode
         onClick={() => setOpen((v) => !v)}
         aria-controls="navbarContent"
         aria-expanded={open}
-        aria-label="Toggle navigation"
+        aria-label={t("common.toggleNavigation")}
       >
         <span className="navbar-toggler-icon"></span>
       </button>

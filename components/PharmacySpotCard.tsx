@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/I18nProvider";
 import { pharmacyPlaceholder } from "@/lib/placeholders";
 import { formatDistance } from "@/lib/geo";
 import type { PharmacySpot } from "@/types/pharmacy";
@@ -12,6 +13,8 @@ interface Props {
 }
 
 export default function PharmacySpotCard({ spot, isSelected, distanceKm, onSelect }: Props) {
+  const t = useT();
+
   return (
     <button
       type="button"
@@ -35,7 +38,7 @@ export default function PharmacySpotCard({ spot, isSelected, distanceKm, onSelec
         <span className="px-spot-head">
           <span className="px-spot-name">{spot.name}</span>
           {spot.isGuard && (
-            <span className="px-spot-tag px-spot-tag--guard">Plantão</span>
+            <span className="px-spot-tag px-spot-tag--guard">{t("pharmacy.guardTag")}</span>
           )}
         </span>
 
@@ -49,7 +52,7 @@ export default function PharmacySpotCard({ spot, isSelected, distanceKm, onSelec
             className={`px-open px-open--${spot.isOpen ? "on" : "off"}`}
           >
             <span className="px-open-dot" aria-hidden="true"></span>
-            {spot.isOpen ? "Aberta" : "Fechada"}
+            {spot.isOpen ? t("common.openBadge") : t("common.closedBadge")}
           </span>
 
           <span className="px-spot-hours">{spot.hours}</span>
@@ -63,14 +66,14 @@ export default function PharmacySpotCard({ spot, isSelected, distanceKm, onSelec
 
           <span className="px-spot-stock">
             <i className="bi bi-capsule" aria-hidden="true"></i>
-            {spot.medications.length} med{spot.medications.length === 1 ? "." : "s."}
+            {t("explorer.medicationsCount", { count: spot.medications.length })}
           </span>
         </span>
 
         {spot.latitude === null && (
           <span className="px-spot-warning">
             <i className="bi bi-exclamation-triangle" aria-hidden="true"></i>
-            Sem coordenadas no mapa
+            {t("pharmacy.noCoordinates")}
           </span>
         )}
       </span>

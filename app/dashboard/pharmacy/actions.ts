@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requirePharmacy } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 const pharmacyImageDir = path.join(process.cwd(), "public", "images", "pharmacies");
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
@@ -36,17 +37,18 @@ async function saveImage(file: File | null): Promise<string | null> {
 }
 
 export async function savePharmacyProfile(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
   const id = Number(formData.get("id"));
 
-  if (id !== pharmacyId) throw new Error("Farmácia inválida.");
+  if (id !== pharmacyId) throw new Error(t("error.invalidPharmacy"));
 
   const name = text(formData, "name");
   const address = text(formData, "address");
   const phone = text(formData, "phone");
 
   if (!name || !address || !phone) {
-    throw new Error("Nome, morada e telefone são obrigatórios.");
+    throw new Error(t("error.nameAddressPhoneRequired"));
   }
 
   const uploaded = await saveImage(formData.get("imageFile") as File | null);

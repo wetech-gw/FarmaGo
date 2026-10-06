@@ -72,7 +72,7 @@ export type SessionUser = {
   id: number;
   name: string;
   email: string;
-  role: "admin" | "owner";
+  role: "admin" | "owner" | "inspecao";
   pharmacyId: number | null;
   pharmacyStatus: "pending" | "approved" | "rejected" | null;
 };
@@ -116,9 +116,21 @@ export async function requireUser(): Promise<SessionUser> {
   return user;
 }
 
+export function homePathForRole(role: "admin" | "owner" | "inspecao"): string {
+  if (role === "admin") return "/admin/dashboard";
+  if (role === "inspecao") return "/inspecao";
+  return "/dashboard";
+}
+
 export async function requireAdmin(): Promise<SessionUser> {
   const user = await requireUser();
-  if (user.role !== "admin") redirect("/dashboard");
+  if (user.role !== "admin") redirect(homePathForRole(user.role));
+  return user;
+}
+
+export async function requireInspector(): Promise<SessionUser> {
+  const user = await requireUser();
+  if (user.role !== "inspecao") redirect(homePathForRole(user.role));
   return user;
 }
 
@@ -131,6 +143,7 @@ export async function requirePharmacy(): Promise<{ user: SessionUser; pharmacyId
   const user = await requireUser();
 
   if (user.role === "admin") redirect("/admin/dashboard");
+  if (user.role === "inspecao") redirect("/inspecao");
   if (!user.pharmacyId) redirect("/dashboard/sem-farmacia");
 
   return { user, pharmacyId: user.pharmacyId };

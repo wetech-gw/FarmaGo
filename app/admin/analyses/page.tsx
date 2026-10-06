@@ -1,10 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { dateInDays, daysUntil } from "@/lib/dates";
+import { formatCurrency, formatDate, formatNumber, getI18n } from "@/lib/i18n";
+import type { TKey } from "@/lib/i18n-core";
 
 export const dynamic = "force-dynamic";
 
+const CATEGORY_KEYS = {
+  infraestrutura: "expense.categoryInfra",
+  pessoal: "expense.categoryStaff",
+  stock: "expense.categoryStock",
+  outros: "expense.categoryOther",
+} as const satisfies Record<string, TKey>;
+
 export default async function AdminAnalysesPage() {
+  const { locale, t } = await getI18n();
   await requireAdmin();
 
   // Despesas agrupadas por mês e categoria (equivale ao SELECT no teu SQL)
@@ -16,7 +26,10 @@ export default async function AdminAnalysesPage() {
   // Agrupar por mês
   const byMonth: Record<string, { total: number; byCategory: Record<string, number> }> = {};
   for (const e of expenses) {
-    const mes = new Date(e.expenseDate).toLocaleDateString("pt-PT", { year: "numeric", month: "long" });
+    const mes = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : locale === "fr" ? "fr-FR" : "pt-PT", {
+      year: "numeric",
+      month: "long",
+    }).format(new Date(e.expenseDate));
     if (!byMonth[mes]) byMonth[mes] = { total: 0, byCategory: {} };
     byMonth[mes].total += Number(e.amount);
     byMonth[mes].byCategory[e.category] = (byMonth[mes].byCategory[e.category] ?? 0) + Number(e.amount);
@@ -54,41 +67,32 @@ export default async function AdminAnalysesPage() {
     outros:         "#374151",
   };
 
+  const kpis = [
+    { label: t("admin.totalExpenses"), value: formatCurrency(locale, totalExpenses), color: undefined },
+    { label: t("admin.unitsInStock"), value: formatNumber(locale, totalQty), color: undefined },
+    { label: t("admin.expiring90"), value: expiringStock.length, color: "#ea580c" },
+    { label: t("admin.activePharmacies"), value: pharmacyStats.filter((p) => p.isOpen).length, color: undefined },
+  ];
+
   return (
     <>
       <div className="mb-4">
-        <h1 className="fw-bold m-0 fs-2">Analyses</h1>
-        <p className="text-muted small m-0">Resumo financeiro e operacional</p>
+        <h1 className="fw-bold m-0 fs-2">{t("admin.analysesTitle")}</h1>
+        <p className="text-muted small m-0">{t("admin.analysesSubtitle")}</p>
       </div>
 
       {/* KPIs */}
       <div className="row g-3 mb-5">
-        <div className="col-6 col-xl-3">
-          <div className="card border-0 rounded-4 p-4 shadow-sm bg-white text-center">
-            <p className="text-secondary small fw-medium mb-1">Total Despesas</p>
-            <h4 className="fw-bold text-dark m-0">
-              {totalExpenses.toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 })}
-            </h4>
+        {kpis.map((kpi) => (
+          <div className="col-6 col-xl-3" key={kpi.label}>
+            <div className="card border-0 rounded-4 p-4 shadow-sm bg-white text-center">
+              <p className="text-secondary small fw-medium mb-1">{kpi.label}</p>
+              <h4 className="fw-bold text-dark m-0" style={kpi.color ? { color: kpi.color } : undefined}>
+                {kpi.value}
+              </h4>
+            </div>
           </div>
-        </div>
-        <div className="col-6 col-xl-3">
-          <div className="card border-0 rounded-4 p-4 shadow-sm bg-white text-center">
-            <p className="text-secondary small fw-medium mb-1">Unidades em Stock</p>
-            <h4 className="fw-bold text-dark m-0">{totalQty.toLocaleString()}</h4>
-          </div>
-        </div>
-        <div className="col-6 col-xl-3">
-          <div className="card border-0 rounded-4 p-4 shadow-sm bg-white text-center">
-            <p className="text-secondary small fw-medium mb-1">A Caducar (90d)</p>
-            <h4 className="fw-bold m-0" style={{ color: "#ea580c" }}>{expiringStock.length}</h4>
-          </div>
-        </div>
-        <div className="col-6 col-xl-3">
-          <div className="card border-0 rounded-4 p-4 shadow-sm bg-white text-center">
-            <p className="text-secondary small fw-medium mb-1">Farmácias Ativas</p>
-            <h4 className="fw-bold text-dark m-0">{pharmacyStats.filter((p) => p.isOpen).length}</h4>
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="row g-4 mb-4">
@@ -96,27 +100,25 @@ export default async function AdminAnalysesPage() {
         <div className="col-12 col-xl-6">
           <div className="card border-0 rounded-4 shadow-sm bg-white h-100">
             <div className="card-header bg-white border-0 pt-4 px-4">
-              <h6 className="fw-bold m-0">Despesas por Mês</h6>
+              <h6 className="fw-bold m-0">{t("admin.expensesByMonth")}</h6>
             </div>
             <div className="card-body">
               {Object.entries(byMonth).length === 0 ? (
-                <p className="text-muted small text-center mt-4">Sem despesas registadas.</p>
+                <p className="text-muted small text-center mt-4">{t("dash.noExpenses")}</p>
               ) : (
                 <div className="d-flex flex-column gap-3">
                   {Object.entries(byMonth).map(([mes, data]) => (
                     <div key={mes}>
                       <div className="d-flex justify-content-between mb-2">
                         <span className="fw-semibold text-dark small text-capitalize">{mes}</span>
-                        <span className="fw-bold small">
-                          {data.total.toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 })}
-                        </span>
+                        <span className="fw-bold small">{formatCurrency(locale, data.total)}</span>
                       </div>
                       {/* Barras por categoria */}
                       <div className="d-flex gap-1" style={{ height: "8px", borderRadius: "4px", overflow: "hidden" }}>
                         {Object.entries(data.byCategory).map(([cat, val]) => (
                           <div
                             key={cat}
-                            title={`${cat}: ${val.toLocaleString()} XOF`}
+                            title={`${cat}: ${formatNumber(locale, val)}`}
                             style={{
                               width: `${(val / data.total) * 100}%`,
                               backgroundColor: categoryColors[cat] ?? "#94a3b8",
@@ -130,8 +132,10 @@ export default async function AdminAnalysesPage() {
                         {Object.entries(data.byCategory).map(([cat, val]) => (
                           <span key={cat} className="d-flex align-items-center gap-1 text-muted" style={{ fontSize: "0.75rem" }}>
                             <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: categoryColors[cat] ?? "#94a3b8", display: "inline-block" }}></span>
-                            <span className="text-capitalize">{cat}</span>
-                            <span className="fw-semibold text-dark">{val.toLocaleString("pt-PT", { style: "currency", currency: "XOF", maximumFractionDigits: 0 })}</span>
+                            <span className="text-capitalize">
+                              {cat in CATEGORY_KEYS ? t(CATEGORY_KEYS[cat as keyof typeof CATEGORY_KEYS]) : cat}
+                            </span>
+                            <span className="fw-semibold text-dark">{formatCurrency(locale, val)}</span>
                           </span>
                         ))}
                       </div>
@@ -149,21 +153,21 @@ export default async function AdminAnalysesPage() {
             <div className="card-header bg-white border-0 pt-4 px-4">
               <h6 className="fw-bold m-0">
                 <i className="bi bi-exclamation-triangle text-warning me-2"></i>
-                Stock a Caducar (próximos 90 dias)
+                {t("admin.expiringSoonTitle")}
               </h6>
             </div>
             <div className="card-body">
               {expiringStock.length === 0 ? (
-                <p className="text-muted small text-center mt-4">Nenhum stock a caducar em breve. ✅</p>
+                <p className="text-muted small text-center mt-4">{t("admin.noExpiringSoon")}</p>
               ) : (
                 <div className="table-responsive">
                   <table className="table table-sm mb-0" style={{ fontSize: "0.85rem" }}>
                     <thead className="border-bottom">
                       <tr className="text-secondary">
-                        <th className="fw-medium py-2">Farmácia</th>
-                        <th className="fw-medium py-2">Medicamento</th>
-                        <th className="fw-medium py-2 text-center">Dias</th>
-                        <th className="fw-medium py-2">Validade</th>
+                        <th className="fw-medium py-2">{t("common.pharmacy")}</th>
+                        <th className="fw-medium py-2">{t("common.medication")}</th>
+                        <th className="fw-medium py-2 text-center">{t("admin.thDays")}</th>
+                        <th className="fw-medium py-2">{t("common.expiry")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -182,7 +186,7 @@ export default async function AdminAnalysesPage() {
                                 {daysLeft}
                               </span>
                             </td>
-                            <td className="py-2 text-muted">{new Date(s.expiryDate).toLocaleDateString("pt-PT")}</td>
+                            <td className="py-2 text-muted">{formatDate(locale, s.expiryDate)}</td>
                           </tr>
                         );
                       })}
@@ -198,18 +202,18 @@ export default async function AdminAnalysesPage() {
       {/* Ranking de farmácias por stock */}
       <div className="card border-0 rounded-4 shadow-sm bg-white">
         <div className="card-header bg-white border-0 pt-4 px-4">
-          <h6 className="fw-bold m-0">Farmácias — Stock & Proprietário</h6>
+          <h6 className="fw-bold m-0">{t("admin.pharmacyStockOwner")}</h6>
         </div>
         <div className="card-body px-0 pb-0">
           <div className="table-responsive">
             <table className="table table-hover mb-0" style={{ fontSize: "0.9rem" }}>
               <thead className="border-bottom">
                 <tr className="text-secondary">
-                  <th className="fw-medium ps-4 py-3">Farmácia</th>
-                  <th className="fw-medium py-3">Proprietário</th>
-                  <th className="fw-medium py-3">Email</th>
-                  <th className="fw-medium py-3 text-center">Produtos em Stock</th>
-                  <th className="fw-medium py-3 text-center pe-4">Estado</th>
+                  <th className="fw-medium ps-4 py-3">{t("common.pharmacy")}</th>
+                  <th className="fw-medium py-3">{t("common.owner")}</th>
+                  <th className="fw-medium py-3">{t("admin.thEmail")}</th>
+                  <th className="fw-medium py-3 text-center">{t("admin.thProducts")}</th>
+                  <th className="fw-medium py-3 text-center pe-4">{t("common.status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,8 +227,8 @@ export default async function AdminAnalysesPage() {
                     </td>
                     <td className="py-3 text-center pe-4">
                       {p.isOpen
-                        ? <span className="badge rounded-pill" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>Aberta</span>
-                        : <span className="badge rounded-pill" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>Fechada</span>
+                        ? <span className="badge rounded-pill" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>{t("common.openBadge")}</span>
+                        : <span className="badge rounded-pill" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>{t("common.closedBadge")}</span>
                       }
                     </td>
                   </tr>

@@ -2,10 +2,12 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import SaleForm from "../SaleForm";
+import { getI18n } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewSalePage() {
+  const { t } = await getI18n();
   const user = await requireUser();
   if (user.role !== "owner") redirect("/admin/dashboard");
 
@@ -27,8 +29,8 @@ export default async function NewSalePage() {
   return (
     <>
       <div className="mb-4">
-        <h1 className="h4 fw-bold mb-1">Nova venda</h1>
-        <p className="text-secondary small mb-0">O stock é actualizado automaticamente.</p>
+        <h1 className="h4 fw-bold mb-1">{t("dash.newSale")}</h1>
+        <p className="text-secondary small mb-0">{t("dash.saleStockUpdated")}</p>
       </div>
 
       <SaleForm

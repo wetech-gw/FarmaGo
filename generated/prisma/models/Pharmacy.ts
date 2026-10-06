@@ -55,6 +55,7 @@ export type PharmacyMinAggregateOutputType = {
   longitude: number | null
   isGuard: boolean | null
   isOpen: boolean | null
+  isActive: boolean | null
   status: $Enums.PharmacyStatus | null
   validatedAt: Date | null
   validatedById: number | null
@@ -76,6 +77,7 @@ export type PharmacyMaxAggregateOutputType = {
   longitude: number | null
   isGuard: boolean | null
   isOpen: boolean | null
+  isActive: boolean | null
   status: $Enums.PharmacyStatus | null
   validatedAt: Date | null
   validatedById: number | null
@@ -97,6 +99,7 @@ export type PharmacyCountAggregateOutputType = {
   longitude: number
   isGuard: number
   isOpen: number
+  isActive: number
   status: number
   validatedAt: number
   validatedById: number
@@ -136,6 +139,7 @@ export type PharmacyMinAggregateInputType = {
   longitude?: true
   isGuard?: true
   isOpen?: true
+  isActive?: true
   status?: true
   validatedAt?: true
   validatedById?: true
@@ -157,6 +161,7 @@ export type PharmacyMaxAggregateInputType = {
   longitude?: true
   isGuard?: true
   isOpen?: true
+  isActive?: true
   status?: true
   validatedAt?: true
   validatedById?: true
@@ -178,6 +183,7 @@ export type PharmacyCountAggregateInputType = {
   longitude?: true
   isGuard?: true
   isOpen?: true
+  isActive?: true
   status?: true
   validatedAt?: true
   validatedById?: true
@@ -286,6 +292,7 @@ export type PharmacyGroupByOutputType = {
   longitude: number | null
   isGuard: boolean
   isOpen: boolean
+  isActive: boolean
   status: $Enums.PharmacyStatus
   validatedAt: Date | null
   validatedById: number | null
@@ -330,6 +337,7 @@ export type PharmacyWhereInput = {
   longitude?: Prisma.FloatNullableFilter<"Pharmacy"> | number | null
   isGuard?: Prisma.BoolFilter<"Pharmacy"> | boolean
   isOpen?: Prisma.BoolFilter<"Pharmacy"> | boolean
+  isActive?: Prisma.BoolFilter<"Pharmacy"> | boolean
   status?: Prisma.EnumPharmacyStatusFilter<"Pharmacy"> | $Enums.PharmacyStatus
   validatedAt?: Prisma.DateTimeNullableFilter<"Pharmacy"> | Date | string | null
   validatedById?: Prisma.IntNullableFilter<"Pharmacy"> | number | null
@@ -343,6 +351,7 @@ export type PharmacyWhereInput = {
   validatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   stocks?: Prisma.PharmacyStockListRelationFilter
   sales?: Prisma.SaleListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
 }
 
 export type PharmacyOrderByWithRelationInput = {
@@ -358,6 +367,7 @@ export type PharmacyOrderByWithRelationInput = {
   longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   isGuard?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   status?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   validatedById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -371,6 +381,7 @@ export type PharmacyOrderByWithRelationInput = {
   validatedBy?: Prisma.UserOrderByWithRelationInput
   stocks?: Prisma.PharmacyStockOrderByRelationAggregateInput
   sales?: Prisma.SaleOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
   _relevance?: Prisma.PharmacyOrderByRelevanceInput
 }
 
@@ -390,6 +401,7 @@ export type PharmacyWhereUniqueInput = Prisma.AtLeast<{
   longitude?: Prisma.FloatNullableFilter<"Pharmacy"> | number | null
   isGuard?: Prisma.BoolFilter<"Pharmacy"> | boolean
   isOpen?: Prisma.BoolFilter<"Pharmacy"> | boolean
+  isActive?: Prisma.BoolFilter<"Pharmacy"> | boolean
   status?: Prisma.EnumPharmacyStatusFilter<"Pharmacy"> | $Enums.PharmacyStatus
   validatedAt?: Prisma.DateTimeNullableFilter<"Pharmacy"> | Date | string | null
   validatedById?: Prisma.IntNullableFilter<"Pharmacy"> | number | null
@@ -403,6 +415,7 @@ export type PharmacyWhereUniqueInput = Prisma.AtLeast<{
   validatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   stocks?: Prisma.PharmacyStockListRelationFilter
   sales?: Prisma.SaleListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
 }, "id">
 
 export type PharmacyOrderByWithAggregationInput = {
@@ -418,6 +431,7 @@ export type PharmacyOrderByWithAggregationInput = {
   longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   isGuard?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   status?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   validatedById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -447,6 +461,7 @@ export type PharmacyScalarWhereWithAggregatesInput = {
   longitude?: Prisma.FloatNullableWithAggregatesFilter<"Pharmacy"> | number | null
   isGuard?: Prisma.BoolWithAggregatesFilter<"Pharmacy"> | boolean
   isOpen?: Prisma.BoolWithAggregatesFilter<"Pharmacy"> | boolean
+  isActive?: Prisma.BoolWithAggregatesFilter<"Pharmacy"> | boolean
   status?: Prisma.EnumPharmacyStatusWithAggregatesFilter<"Pharmacy"> | $Enums.PharmacyStatus
   validatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Pharmacy"> | Date | string | null
   validatedById?: Prisma.IntNullableWithAggregatesFilter<"Pharmacy"> | number | null
@@ -466,6 +481,7 @@ export type PharmacyCreateInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -478,6 +494,7 @@ export type PharmacyCreateInput = {
   validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
   stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateInput = {
@@ -493,6 +510,7 @@ export type PharmacyUncheckedCreateInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -504,6 +522,7 @@ export type PharmacyUncheckedCreateInput = {
   medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
   stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUpdateInput = {
@@ -517,6 +536,7 @@ export type PharmacyUpdateInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -529,6 +549,7 @@ export type PharmacyUpdateInput = {
   validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
   stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateInput = {
@@ -544,6 +565,7 @@ export type PharmacyUncheckedUpdateInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -555,6 +577,7 @@ export type PharmacyUncheckedUpdateInput = {
   medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
   stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyCreateManyInput = {
@@ -570,6 +593,7 @@ export type PharmacyCreateManyInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -589,6 +613,7 @@ export type PharmacyUpdateManyMutationInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -609,6 +634,7 @@ export type PharmacyUncheckedUpdateManyInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -646,6 +672,7 @@ export type PharmacyCountOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   isGuard?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   status?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrder
   validatedById?: Prisma.SortOrder
@@ -675,6 +702,7 @@ export type PharmacyMaxOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   isGuard?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   status?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrder
   validatedById?: Prisma.SortOrder
@@ -696,6 +724,7 @@ export type PharmacyMinOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   isGuard?: Prisma.SortOrder
   isOpen?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   status?: Prisma.SortOrder
   validatedAt?: Prisma.SortOrder
   validatedById?: Prisma.SortOrder
@@ -892,6 +921,20 @@ export type PharmacyUpdateOneRequiredWithoutClientsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacyUpdateToOneWithWhereWithoutClientsInput, Prisma.PharmacyUpdateWithoutClientsInput>, Prisma.PharmacyUncheckedUpdateWithoutClientsInput>
 }
 
+export type PharmacyCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.PharmacyCreateWithoutNotificationsInput, Prisma.PharmacyUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.PharmacyCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.PharmacyWhereUniqueInput
+}
+
+export type PharmacyUpdateOneRequiredWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.PharmacyCreateWithoutNotificationsInput, Prisma.PharmacyUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.PharmacyCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.PharmacyUpsertWithoutNotificationsInput
+  connect?: Prisma.PharmacyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PharmacyUpdateToOneWithWhereWithoutNotificationsInput, Prisma.PharmacyUpdateWithoutNotificationsInput>, Prisma.PharmacyUncheckedUpdateWithoutNotificationsInput>
+}
+
 export type PharmacyCreateNestedOneWithoutSalesInput = {
   create?: Prisma.XOR<Prisma.PharmacyCreateWithoutSalesInput, Prisma.PharmacyUncheckedCreateWithoutSalesInput>
   connectOrCreate?: Prisma.PharmacyCreateOrConnectWithoutSalesInput
@@ -917,6 +960,7 @@ export type PharmacyCreateWithoutOwnerInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -928,6 +972,7 @@ export type PharmacyCreateWithoutOwnerInput = {
   validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
   stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateWithoutOwnerInput = {
@@ -942,6 +987,7 @@ export type PharmacyUncheckedCreateWithoutOwnerInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -953,6 +999,7 @@ export type PharmacyUncheckedCreateWithoutOwnerInput = {
   medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
   stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyCreateOrConnectWithoutOwnerInput = {
@@ -976,6 +1023,7 @@ export type PharmacyCreateWithoutValidatedByInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -987,6 +1035,7 @@ export type PharmacyCreateWithoutValidatedByInput = {
   owner: Prisma.UserCreateNestedOneWithoutPharmaciesInput
   stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateWithoutValidatedByInput = {
@@ -1002,6 +1051,7 @@ export type PharmacyUncheckedCreateWithoutValidatedByInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -1012,6 +1062,7 @@ export type PharmacyUncheckedCreateWithoutValidatedByInput = {
   medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
   stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyCreateOrConnectWithoutValidatedByInput = {
@@ -1056,6 +1107,7 @@ export type PharmacyScalarWhereInput = {
   longitude?: Prisma.FloatNullableFilter<"Pharmacy"> | number | null
   isGuard?: Prisma.BoolFilter<"Pharmacy"> | boolean
   isOpen?: Prisma.BoolFilter<"Pharmacy"> | boolean
+  isActive?: Prisma.BoolFilter<"Pharmacy"> | boolean
   status?: Prisma.EnumPharmacyStatusFilter<"Pharmacy"> | $Enums.PharmacyStatus
   validatedAt?: Prisma.DateTimeNullableFilter<"Pharmacy"> | Date | string | null
   validatedById?: Prisma.IntNullableFilter<"Pharmacy"> | number | null
@@ -1091,6 +1143,7 @@ export type PharmacyCreateWithoutMedicationsInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -1102,6 +1155,7 @@ export type PharmacyCreateWithoutMedicationsInput = {
   validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
   stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateWithoutMedicationsInput = {
@@ -1117,6 +1171,7 @@ export type PharmacyUncheckedCreateWithoutMedicationsInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -1127,6 +1182,7 @@ export type PharmacyUncheckedCreateWithoutMedicationsInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutPharmacyInput
   stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyCreateOrConnectWithoutMedicationsInput = {
@@ -1156,6 +1212,7 @@ export type PharmacyUpdateWithoutMedicationsInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1167,6 +1224,7 @@ export type PharmacyUpdateWithoutMedicationsInput = {
   validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
   stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateWithoutMedicationsInput = {
@@ -1182,6 +1240,7 @@ export type PharmacyUncheckedUpdateWithoutMedicationsInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1192,6 +1251,7 @@ export type PharmacyUncheckedUpdateWithoutMedicationsInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutPharmacyNestedInput
   stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyCreateWithoutStocksInput = {
@@ -1205,6 +1265,7 @@ export type PharmacyCreateWithoutStocksInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -1216,6 +1277,7 @@ export type PharmacyCreateWithoutStocksInput = {
   owner: Prisma.UserCreateNestedOneWithoutPharmaciesInput
   validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
   sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateWithoutStocksInput = {
@@ -1231,6 +1293,7 @@ export type PharmacyUncheckedCreateWithoutStocksInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -1241,6 +1304,7 @@ export type PharmacyUncheckedCreateWithoutStocksInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutPharmacyInput
   medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyCreateOrConnectWithoutStocksInput = {
@@ -1270,6 +1334,7 @@ export type PharmacyUpdateWithoutStocksInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1281,6 +1346,7 @@ export type PharmacyUpdateWithoutStocksInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutPharmaciesNestedInput
   validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
   sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateWithoutStocksInput = {
@@ -1296,6 +1362,7 @@ export type PharmacyUncheckedUpdateWithoutStocksInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1306,6 +1373,7 @@ export type PharmacyUncheckedUpdateWithoutStocksInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutPharmacyNestedInput
   medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyCreateWithoutExpensesInput = {
@@ -1319,6 +1387,7 @@ export type PharmacyCreateWithoutExpensesInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -1330,6 +1399,7 @@ export type PharmacyCreateWithoutExpensesInput = {
   validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
   stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateWithoutExpensesInput = {
@@ -1345,6 +1415,7 @@ export type PharmacyUncheckedCreateWithoutExpensesInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -1355,6 +1426,7 @@ export type PharmacyUncheckedCreateWithoutExpensesInput = {
   medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
   stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyCreateOrConnectWithoutExpensesInput = {
@@ -1384,6 +1456,7 @@ export type PharmacyUpdateWithoutExpensesInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1395,6 +1468,7 @@ export type PharmacyUpdateWithoutExpensesInput = {
   validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
   stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateWithoutExpensesInput = {
@@ -1410,6 +1484,7 @@ export type PharmacyUncheckedUpdateWithoutExpensesInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1420,6 +1495,7 @@ export type PharmacyUncheckedUpdateWithoutExpensesInput = {
   medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
   stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyCreateWithoutClientsInput = {
@@ -1433,6 +1509,7 @@ export type PharmacyCreateWithoutClientsInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -1444,6 +1521,7 @@ export type PharmacyCreateWithoutClientsInput = {
   validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
   stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateWithoutClientsInput = {
@@ -1459,6 +1537,7 @@ export type PharmacyUncheckedCreateWithoutClientsInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -1469,6 +1548,7 @@ export type PharmacyUncheckedCreateWithoutClientsInput = {
   medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
   stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyCreateOrConnectWithoutClientsInput = {
@@ -1498,6 +1578,7 @@ export type PharmacyUpdateWithoutClientsInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1509,6 +1590,7 @@ export type PharmacyUpdateWithoutClientsInput = {
   validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
   stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateWithoutClientsInput = {
@@ -1524,12 +1606,136 @@ export type PharmacyUncheckedUpdateWithoutClientsInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutPharmacyNestedInput
+  medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
+  stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
+}
+
+export type PharmacyCreateWithoutNotificationsInput = {
+  name: string
+  image?: string | null
+  address: string
+  phone: string
+  schedule: string
+  hours: string
+  latitude?: number | null
+  longitude?: number | null
+  isGuard?: boolean
+  isOpen?: boolean
+  isActive?: boolean
+  status?: $Enums.PharmacyStatus
+  validatedAt?: Date | string | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  clients?: Prisma.ClientCreateNestedManyWithoutPharmacyInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutPharmacyInput
+  medications?: Prisma.MedicationCreateNestedManyWithoutPharmacyInput
+  owner: Prisma.UserCreateNestedOneWithoutPharmaciesInput
+  validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
+  stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
+  sales?: Prisma.SaleCreateNestedManyWithoutPharmacyInput
+}
+
+export type PharmacyUncheckedCreateWithoutNotificationsInput = {
+  id?: number
+  ownerId: number
+  name: string
+  image?: string | null
+  address: string
+  phone: string
+  schedule: string
+  hours: string
+  latitude?: number | null
+  longitude?: number | null
+  isGuard?: boolean
+  isOpen?: boolean
+  isActive?: boolean
+  status?: $Enums.PharmacyStatus
+  validatedAt?: Date | string | null
+  validatedById?: number | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  clients?: Prisma.ClientUncheckedCreateNestedManyWithoutPharmacyInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutPharmacyInput
+  medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
+  stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPharmacyInput
+}
+
+export type PharmacyCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.PharmacyWhereUniqueInput
+  create: Prisma.XOR<Prisma.PharmacyCreateWithoutNotificationsInput, Prisma.PharmacyUncheckedCreateWithoutNotificationsInput>
+}
+
+export type PharmacyUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.PharmacyUpdateWithoutNotificationsInput, Prisma.PharmacyUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.PharmacyCreateWithoutNotificationsInput, Prisma.PharmacyUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.PharmacyWhereInput
+}
+
+export type PharmacyUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.PharmacyWhereInput
+  data: Prisma.XOR<Prisma.PharmacyUpdateWithoutNotificationsInput, Prisma.PharmacyUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type PharmacyUpdateWithoutNotificationsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  schedule?: Prisma.StringFieldUpdateOperationsInput | string
+  hours?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
+  validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clients?: Prisma.ClientUpdateManyWithoutPharmacyNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutPharmacyNestedInput
+  medications?: Prisma.MedicationUpdateManyWithoutPharmacyNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutPharmaciesNestedInput
+  validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
+  stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+}
+
+export type PharmacyUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  ownerId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  schedule?: Prisma.StringFieldUpdateOperationsInput | string
+  hours?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
+  validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clients?: Prisma.ClientUncheckedUpdateManyWithoutPharmacyNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutPharmacyNestedInput
   medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
   stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
@@ -1547,6 +1753,7 @@ export type PharmacyCreateWithoutSalesInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -1558,6 +1765,7 @@ export type PharmacyCreateWithoutSalesInput = {
   owner: Prisma.UserCreateNestedOneWithoutPharmaciesInput
   validatedBy?: Prisma.UserCreateNestedOneWithoutValidatedPharmaciesInput
   stocks?: Prisma.PharmacyStockCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyUncheckedCreateWithoutSalesInput = {
@@ -1573,6 +1781,7 @@ export type PharmacyUncheckedCreateWithoutSalesInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -1583,6 +1792,7 @@ export type PharmacyUncheckedCreateWithoutSalesInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutPharmacyInput
   medications?: Prisma.MedicationUncheckedCreateNestedManyWithoutPharmacyInput
   stocks?: Prisma.PharmacyStockUncheckedCreateNestedManyWithoutPharmacyInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutPharmacyInput
 }
 
 export type PharmacyCreateOrConnectWithoutSalesInput = {
@@ -1612,6 +1822,7 @@ export type PharmacyUpdateWithoutSalesInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1623,6 +1834,7 @@ export type PharmacyUpdateWithoutSalesInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutPharmaciesNestedInput
   validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
   stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateWithoutSalesInput = {
@@ -1638,6 +1850,7 @@ export type PharmacyUncheckedUpdateWithoutSalesInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1648,6 +1861,7 @@ export type PharmacyUncheckedUpdateWithoutSalesInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutPharmacyNestedInput
   medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
   stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyCreateManyOwnerInput = {
@@ -1662,6 +1876,7 @@ export type PharmacyCreateManyOwnerInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   validatedById?: number | null
@@ -1683,6 +1898,7 @@ export type PharmacyCreateManyValidatedByInput = {
   longitude?: number | null
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: $Enums.PharmacyStatus
   validatedAt?: Date | string | null
   rejectionReason?: string | null
@@ -1701,6 +1917,7 @@ export type PharmacyUpdateWithoutOwnerInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1712,6 +1929,7 @@ export type PharmacyUpdateWithoutOwnerInput = {
   validatedBy?: Prisma.UserUpdateOneWithoutValidatedPharmaciesNestedInput
   stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateWithoutOwnerInput = {
@@ -1726,6 +1944,7 @@ export type PharmacyUncheckedUpdateWithoutOwnerInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1737,6 +1956,7 @@ export type PharmacyUncheckedUpdateWithoutOwnerInput = {
   medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
   stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateManyWithoutOwnerInput = {
@@ -1751,6 +1971,7 @@ export type PharmacyUncheckedUpdateManyWithoutOwnerInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   validatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1770,6 +1991,7 @@ export type PharmacyUpdateWithoutValidatedByInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1781,6 +2003,7 @@ export type PharmacyUpdateWithoutValidatedByInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutPharmaciesNestedInput
   stocks?: Prisma.PharmacyStockUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateWithoutValidatedByInput = {
@@ -1796,6 +2019,7 @@ export type PharmacyUncheckedUpdateWithoutValidatedByInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1806,6 +2030,7 @@ export type PharmacyUncheckedUpdateWithoutValidatedByInput = {
   medications?: Prisma.MedicationUncheckedUpdateManyWithoutPharmacyNestedInput
   stocks?: Prisma.PharmacyStockUncheckedUpdateManyWithoutPharmacyNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutPharmacyNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutPharmacyNestedInput
 }
 
 export type PharmacyUncheckedUpdateManyWithoutValidatedByInput = {
@@ -1821,6 +2046,7 @@ export type PharmacyUncheckedUpdateManyWithoutValidatedByInput = {
   longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   isGuard?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isOpen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumPharmacyStatusFieldUpdateOperationsInput | $Enums.PharmacyStatus
   validatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1839,6 +2065,7 @@ export type PharmacyCountOutputType = {
   medications: number
   stocks: number
   sales: number
+  notifications: number
 }
 
 export type PharmacyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1847,6 +2074,7 @@ export type PharmacyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   medications?: boolean | PharmacyCountOutputTypeCountMedicationsArgs
   stocks?: boolean | PharmacyCountOutputTypeCountStocksArgs
   sales?: boolean | PharmacyCountOutputTypeCountSalesArgs
+  notifications?: boolean | PharmacyCountOutputTypeCountNotificationsArgs
 }
 
 /**
@@ -1894,6 +2122,13 @@ export type PharmacyCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Types.
   where?: Prisma.SaleWhereInput
 }
 
+/**
+ * PharmacyCountOutputType without action
+ */
+export type PharmacyCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
 
 export type PharmacySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1908,6 +2143,7 @@ export type PharmacySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   longitude?: boolean
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: boolean
   validatedAt?: boolean
   validatedById?: boolean
@@ -1921,6 +2157,7 @@ export type PharmacySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   validatedBy?: boolean | Prisma.Pharmacy$validatedByArgs<ExtArgs>
   stocks?: boolean | Prisma.Pharmacy$stocksArgs<ExtArgs>
   sales?: boolean | Prisma.Pharmacy$salesArgs<ExtArgs>
+  notifications?: boolean | Prisma.Pharmacy$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.PharmacyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pharmacy"]>
 
@@ -1939,6 +2176,7 @@ export type PharmacySelectScalar = {
   longitude?: boolean
   isGuard?: boolean
   isOpen?: boolean
+  isActive?: boolean
   status?: boolean
   validatedAt?: boolean
   validatedById?: boolean
@@ -1947,7 +2185,7 @@ export type PharmacySelectScalar = {
   updatedAt?: boolean
 }
 
-export type PharmacyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerId" | "name" | "image" | "address" | "phone" | "schedule" | "hours" | "latitude" | "longitude" | "isGuard" | "isOpen" | "status" | "validatedAt" | "validatedById" | "rejectionReason" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacy"]>
+export type PharmacyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerId" | "name" | "image" | "address" | "phone" | "schedule" | "hours" | "latitude" | "longitude" | "isGuard" | "isOpen" | "isActive" | "status" | "validatedAt" | "validatedById" | "rejectionReason" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacy"]>
 export type PharmacyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   clients?: boolean | Prisma.Pharmacy$clientsArgs<ExtArgs>
   expenses?: boolean | Prisma.Pharmacy$expensesArgs<ExtArgs>
@@ -1956,6 +2194,7 @@ export type PharmacyInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   validatedBy?: boolean | Prisma.Pharmacy$validatedByArgs<ExtArgs>
   stocks?: boolean | Prisma.Pharmacy$stocksArgs<ExtArgs>
   sales?: boolean | Prisma.Pharmacy$salesArgs<ExtArgs>
+  notifications?: boolean | Prisma.Pharmacy$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.PharmacyCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -1969,6 +2208,7 @@ export type $PharmacyPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     validatedBy: Prisma.$UserPayload<ExtArgs> | null
     stocks: Prisma.$PharmacyStockPayload<ExtArgs>[]
     sales: Prisma.$SalePayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1983,6 +2223,7 @@ export type $PharmacyPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     longitude: number | null
     isGuard: boolean
     isOpen: boolean
+    isActive: boolean
     status: $Enums.PharmacyStatus
     validatedAt: Date | null
     validatedById: number | null
@@ -2336,6 +2577,7 @@ export interface Prisma__PharmacyClient<T, Null = never, ExtArgs extends runtime
   validatedBy<T extends Prisma.Pharmacy$validatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pharmacy$validatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   stocks<T extends Prisma.Pharmacy$stocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pharmacy$stocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PharmacyStockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sales<T extends Prisma.Pharmacy$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pharmacy$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.Pharmacy$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Pharmacy$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2377,6 +2619,7 @@ export interface PharmacyFieldRefs {
   readonly longitude: Prisma.FieldRef<"Pharmacy", 'Float'>
   readonly isGuard: Prisma.FieldRef<"Pharmacy", 'Boolean'>
   readonly isOpen: Prisma.FieldRef<"Pharmacy", 'Boolean'>
+  readonly isActive: Prisma.FieldRef<"Pharmacy", 'Boolean'>
   readonly status: Prisma.FieldRef<"Pharmacy", 'PharmacyStatus'>
   readonly validatedAt: Prisma.FieldRef<"Pharmacy", 'DateTime'>
   readonly validatedById: Prisma.FieldRef<"Pharmacy", 'Int'>
@@ -2867,6 +3110,30 @@ export type Pharmacy$salesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+}
+
+/**
+ * Pharmacy.notifications
+ */
+export type Pharmacy$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**

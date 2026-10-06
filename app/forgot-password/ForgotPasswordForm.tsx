@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useT } from "@/components/I18nProvider";
 import {
   checkEmailAction,
   resetPasswordAction,
@@ -10,6 +11,7 @@ import {
 const initialState: ForgotState = { status: "idle" };
 
 export default function ForgotPasswordForm() {
+  const t = useT();
   const [checkState, checkAction, checking] = useActionState(
     checkEmailAction,
     initialState,
@@ -36,7 +38,7 @@ export default function ForgotPasswordForm() {
         <form action={checkAction}>
           <div className="mb-3">
             <label className="form-label small fw-medium text-secondary" htmlFor="email">
-              Email da conta
+              {t("forgot.accountEmail")}
             </label>
             <input
               id="email"
@@ -53,7 +55,7 @@ export default function ForgotPasswordForm() {
             className="btn w-100 text-white rounded-3 py-2 fw-medium"
             style={{ backgroundColor: "#0f8a0e" }}
           >
-            {checking ? "A verificar..." : "Verificar email"}
+            {checking ? t("forgot.checking") : t("forgot.checkEmail")}
           </button>
         </form>
       ) : (
@@ -61,11 +63,11 @@ export default function ForgotPasswordForm() {
           <input type="hidden" name="email" value={email} />
           <p className="small text-success fw-semibold">
             <i className="bi bi-check-circle me-1"></i>
-            Email válido. Defina a nova palavra-passe.
+            {t("forgot.emailValid")}
           </p>
           <div className="mb-3">
             <label className="form-label small fw-medium text-secondary" htmlFor="password">
-              Nova palavra-passe
+              {t("forgot.newPassword")}
             </label>
             <input
               id="password"
@@ -77,7 +79,7 @@ export default function ForgotPasswordForm() {
           </div>
           <div className="mb-3">
             <label className="form-label small fw-medium text-secondary" htmlFor="confirm">
-              Confirmar palavra-passe
+              {t("forgot.confirmPassword")}
             </label>
             <input
               id="confirm"
@@ -93,7 +95,7 @@ export default function ForgotPasswordForm() {
             className="btn w-100 text-white rounded-3 py-2 fw-medium"
             style={{ backgroundColor: "#0f8a0e" }}
           >
-            {resetting ? "A guardar..." : "Recuperar palavra-passe"}
+            {resetting ? t("forgot.saving") : t("forgot.submit")}
           </button>
         </form>
       )}

@@ -4,24 +4,25 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 function text(formData: FormData, key: string): string {
   return String(formData.get(key) ?? "").trim();
 }
 
-function readQuantity(formData: FormData): number {
+function readQuantity(formData: FormData, t: Awaited<ReturnType<typeof getT>>): number {
   const quantity = Number.parseInt(text(formData, "quantity"), 10);
   if (!Number.isFinite(quantity) || quantity < 0) {
-    throw new Error("Quantidade inválida.");
+    throw new Error(t("error.invalidQuantity"));
   }
   return quantity;
 }
 
-function readExpiryDate(formData: FormData): Date {
+function readExpiryDate(formData: FormData, t: Awaited<ReturnType<typeof getT>>): Date {
   const value = text(formData, "expiryDate");
   const date = new Date(value);
   if (!value || Number.isNaN(date.getTime())) {
-    throw new Error("Data de validade inválida.");
+    throw new Error(t("error.invalidExpiryDate"));
   }
   return date;
 }
@@ -32,18 +33,19 @@ function refresh(paths: string[]) {
 }
 
 export async function addStock(formData: FormData): Promise<void> {
+  const t = await getT();
   await requireAdmin();
 
   const pharmacyId = Number(text(formData, "pharmacyId"));
   const medicationId = Number(text(formData, "medicationId"));
-  if (!pharmacyId || !medicationId) throw new Error("Escolha a farmácia e o medicamento.");
+  if (!pharmacyId || !medicationId) throw new Error(t("error.choosePharmacyAndMedication"));
 
   await prisma.pharmacyStock.create({
     data: {
       pharmacyId,
       medicationId,
-      quantity: readQuantity(formData),
-      expiryDate: readExpiryDate(formData),
+      quantity: readQuantity(formData, t),
+      expiryDate: readExpiryDate(formData, t),
       batchNumber: text(formData, "batchNumber") || null,
     },
   });
@@ -53,16 +55,17 @@ export async function addStock(formData: FormData): Promise<void> {
 }
 
 export async function updateStock(formData: FormData): Promise<void> {
+  const t = await getT();
   await requireAdmin();
 
   const id = Number(text(formData, "id"));
-  if (!id) throw new Error("Entrada de stock inválida.");
+  if (!id) throw new Error(t("error.invalidStockEntry"));
 
   await prisma.pharmacyStock.update({
     where: { id },
     data: {
-      quantity:    readQuantity(formData),
-      expiryDate:  readExpiryDate(formData),
+      quantity:    readQuantity(formData, t),
+      expiryDate:  readExpiryDate(formData, t),
       batchNumber: text(formData, "batchNumber") || null,
     },
   });

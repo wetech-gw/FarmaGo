@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type * as Leaflet from "leaflet";
 import { BISSAU_CENTER } from "@/lib/geo";
 import { loadLeaflet } from "@/lib/leaflet";
+import { useT } from "@/components/I18nProvider";
 
 interface Props {
   latitude?: number | null;
@@ -20,6 +21,7 @@ function normalize(input: string): string {
 }
 
 export default function LocationPicker({ latitude, longitude }: Props) {
+  const t = useT();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
   const markerRef = useRef<Leaflet.Marker | null>(null);
@@ -29,7 +31,11 @@ export default function LocationPicker({ latitude, longitude }: Props) {
   const [lng, setLng] = useState(longitude != null ? longitude.toFixed(6) : "");
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastEvent, setLastEvent] = useState<string>("");
+  const [lastEvent, setLastEvent] = useState<{
+    key: "picker.eventClick" | "picker.eventLeafletClick" | "picker.eventManual" | "picker.eventGeolocation";
+    lat: string;
+    lng: string;
+  } | null>(null);
 
   const applyPosition = (nextLat: number, nextLng: number) => {
     setLat(nextLat.toFixed(6));
@@ -102,12 +108,16 @@ export default function LocationPicker({ latitude, longitude }: Props) {
           const { lat: nextLat, lng: nextLng } = map.containerPointToLatLng(point);
 
           applyPosition(nextLat, nextLng);
-          setLastEvent(`clique (${nextLat.toFixed(5)}, ${nextLng.toFixed(5)})`);
+          setLastEvent({ key: "picker.eventClick", lat: nextLat.toFixed(5), lng: nextLng.toFixed(5) });
         };
 
         map.on("click", (event: Leaflet.LeafletMouseEvent) => {
           applyPosition(event.latlng.lat, event.latlng.lng);
-          setLastEvent(`clique leaflet (${event.latlng.lat.toFixed(5)}, ${event.latlng.lng.toFixed(5)})`);
+          setLastEvent({
+            key: "picker.eventLeafletClick",
+            lat: event.latlng.lat.toFixed(5),
+            lng: event.latlng.lng.toFixed(5),
+          });
         });
 
         containerRef.current.addEventListener("click", onPointer, true);
@@ -154,7 +164,11 @@ export default function LocationPicker({ latitude, longitude }: Props) {
     if (!Number.isFinite(lngValue) || Math.abs(lngValue) > MAX_LNG) return;
 
     applyPosition(latValue, lngValue);
-    setLastEvent(`escrito à mão (${latValue.toFixed(5)}, ${lngValue.toFixed(5)})`);
+    setLastEvent({
+      key: "picker.eventManual",
+      lat: latValue.toFixed(5),
+      lng: lngValue.toFixed(5),
+    });
   };
 
   const useMyLocation = () => {
@@ -165,14 +179,18 @@ export default function LocationPicker({ latitude, longitude }: Props) {
       const { latitude: nextLat, longitude: nextLng } = position.coords;
       applyPosition(nextLat, nextLng);
       map.setView([nextLat, nextLng], 16);
-      setLastEvent(`geolocalização (${nextLat.toFixed(5)}, ${nextLng.toFixed(5)})`);
+      setLastEvent({
+        key: "picker.eventGeolocation",
+        lat: nextLat.toFixed(5),
+        lng: nextLng.toFixed(5),
+      });
     });
   };
 
   const clear = () => {
     setLat("");
     setLng("");
-    setLastEvent("");
+    setLastEvent(null);
     markerRef.current?.remove();
     markerRef.current = null;
   };
@@ -184,7 +202,7 @@ export default function LocationPicker({ latitude, longitude }: Props) {
       <input type="hidden" name="latitude" value={lat} />
       <input type="hidden" name="longitude" value={lng} />
 
-      <div ref={containerRef} className="px-picker-map" aria-label="Selecionar localização da farmácia" />
+      <div ref={containerRef} className="px-picker-map" aria-label={t("picker.mapLabel")} />
 
       <div className="px-picker-controls">
         <div className="row g-2">
@@ -229,47 +247,39 @@ export default function LocationPicker({ latitude, longitude }: Props) {
           <div className="col-12 col-md-6 d-flex align-items-end gap-2">
             <button type="button" onClick={useMyLocation} className="btn btn-outline-success rounded-3">
               <i className="bi bi-crosshair me-1"></i>
-              A minha localização
+              {t("picker.myLocation")}
             </button>
             <button type="button" onClick={clear} className="btn btn-outline-secondary rounded-3">
               <i className="bi bi-x-lg me-1"></i>
-              Limpar
+              {t("picker.clear")}
             </button>
           </div>
         </div>
 
         <p className="form-text mb-0 mt-2">
-          {error
-            ? ""
-            : ready
-              ? "Clique no mapa para posicionar a farmácia, arraste o marcador para ajustar, ou escreva as coordenadas. Sem coordenadas, a farmácia aparece na lista mas não é marcada no mapa."
-              : "A carregar o mapa..."}
+          {error ? "" : ready ? t("picker.hint") : t("picker.loading")}
         </p>
 
         {lastEvent && (
           <p className="form-text mb-0 mt-1 px-picker-debug">
             <i className="bi bi-record-circle me-1"></i>
-            Última posição: {lastEvent}
+            {t("picker.lastPosition", { event: t(lastEvent.key, { lat: lastEvent.lat, lng: lastEvent.lng }) })}
           </p>
         )}
 
         {!canSave && (
           <p className="form-text text-warning-emphasis mb-0 mt-1">
             <i className="bi bi-exclamation-triangle me-1"></i>
-            Sem coordenadas: a farmácia vai ser criada, mas não aparece marcada no mapa.
+            {t("picker.noCoordinatesWarning")}
           </p>
         )}
 
         {error && (
           <div className="alert alert-warning rounded-3 small mt-2 mb-0 py-2 px-3">
             <i className="bi bi-exclamation-triangle me-1"></i>
-            Não foi possível carregar o mapa: {error}
+            {t("picker.loadError", { error })}
             <br />
-            <span className="text-muted">
-              Verifica a ligação à internet (os mosaicos vêm de{" "}
-              <code className="user-select-all">tile.openstreetmap.org</code>) e confirma que
-              o Leaflet está instalado: <code className="user-select-all">npm i leaflet</code>.
-            </span>
+            <span className="text-muted">{t("picker.loadErrorHint")}</span>
           </div>
         )}
       </div>

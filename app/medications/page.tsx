@@ -1,18 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import MedicationsShowcase from "@/components/MedicationsShowcase";
 import Footer from "@/components/Footer";
+import MedicationsShowcase from "@/components/MedicationsShowcase";
 import { getMedicationsWithAvailability } from "@/lib/medications";
+import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Medicamentos | FarmaxGo",
-  description:
-    "Catálogo completo de medicamentos disponíveis FarmaxGo, com pesquisa por nome e dosagem.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t("medsPage.metaTitle"), description: t("medsPage.metaDescription") };
+}
 
 export default async function MedicationsPage() {
+  const t = await getT();
   const medications = await getMedicationsWithAvailability();
 
   return (
@@ -28,25 +30,24 @@ export default async function MedicationsPage() {
           }}
         >
           <div className="container position-relative">
-            <nav aria-label="breadcrumb">
+            <nav aria-label={t("common.breadcrumb")}>
               <ol className="breadcrumb mb-2">
                 <li className="breadcrumb-item">
                   <Link href="/" className="text-white-50">
-                    Início
+                    {t("home")}
                   </Link>
                 </li>
                 <li className="breadcrumb-item active text-white" aria-current="page">
-                  Medicamentos
+                  {t("medsPage.breadcrumb")}
                 </li>
               </ol>
             </nav>
 
             <h1 className="fw-bold mb-2" style={{ letterSpacing: "-0.02em" }}>
-              Catálogo de Medicamentos
+              {t("medsPage.title")}
             </h1>
             <p className="mb-0 text-white-50" style={{ maxWidth: "62ch" }}>
-              Pesquise por nome ou dosagem, filtre por disponibilidade e descubra em
-              quantas farmácias cada medicamento pode ser encontrado.
+              {t("medsPage.description")}
             </p>
 
             <div className="d-flex flex-wrap gap-2 mt-4">
@@ -56,7 +57,7 @@ export default async function MedicationsPage() {
                 style={{ color: "#0d8b0c" }}
               >
                 <i className="bi bi-geo-alt-fill"></i>
-                Encontrar farmácias
+                {t("medsPage.findPharmacies")}
               </Link>
               <Link
                 href="/guards"
@@ -64,19 +65,13 @@ export default async function MedicationsPage() {
                 style={{ color: "#fff", borderColor: "rgba(255,255,255,.55)" }}
               >
                 <i className="bi bi-clock-history"></i>
-                Farmácias de plantão
+                {t("guardPharmacies")}
               </Link>
             </div>
           </div>
         </section>
 
-        <MedicationsShowcase
-          medications={medications}
-          eyebrow="Farmácias parceiras"
-          title="Explore o"
-          accent="catálogo completo"
-          description="Cada medicamento mostra o estado de stock em tempo real nas farmácias parceiras do FarmaxGo."
-        />
+        <MedicationsShowcase medications={medications} />
       </main>
 
       <Footer />

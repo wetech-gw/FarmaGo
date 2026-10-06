@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requirePharmacy } from "@/lib/auth";
+import { getT } from "@/lib/i18n";
 
 export type SaleItemInput = { stockId: number; quantity: number };
 
@@ -16,18 +17,19 @@ export type CreateSaleInput = {
 };
 
 export async function createSale(input: CreateSaleInput): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
 
   const items = (input.items ?? []).filter((i) => i.stockId && i.quantity > 0);
-  if (items.length === 0) throw new Error("Adicione pelo menos um medicamento.");
+  if (items.length === 0) throw new Error(t("error.addAtLeastOneMedication"));
 
   let clientId = input.clientId ? Number(input.clientId) : null;
   if (clientId) {
     const client = await prisma.client.findFirst({ where: { id: clientId, pharmacyId } });
-    if (!client) throw new Error("Cliente inválido.");
+    if (!client) throw new Error(t("error.invalidClient"));
   } else {
     const name = (input.newClientName ?? "").trim();
-    if (!name) throw new Error("Indique o nome do cliente.");
+    if (!name) throw new Error(t("error.clientNameRequired"));
     const created = await prisma.client.create({
       data: {
         pharmacyId,
@@ -47,9 +49,9 @@ export async function createSale(input: CreateSaleInput): Promise<void> {
       where: { id: item.stockId, pharmacyId },
       include: { medication: true },
     });
-    if (!stock) throw new Error("Linha de stock inválida.");
+    if (!stock) throw new Error(t("error.invalidStockLine"));
     if (stock.quantity < item.quantity) {
-      throw new Error(`Stock insuficiente para ${stock.medication.name}.`);
+      throw new Error(t("error.insufficientStock", { name: stock.medication.name }));
     }
 
     const unitPrice = Number(stock.unitPrice);
@@ -86,11 +88,12 @@ export async function createSale(input: CreateSaleInput): Promise<void> {
 }
 
 export async function deleteSale(formData: FormData): Promise<void> {
+  const t = await getT();
   const { pharmacyId } = await requirePharmacy();
   const id = Number(formData.get("id"));
 
   const found = await prisma.sale.findFirst({ where: { id, pharmacyId } });
-  if (!found) throw new Error("Venda não pertence à sua farmácia.");
+  if (!found) throw new Error(t("error.saleNotYours"));
 
   await prisma.sale.delete({ where: { id } });
 

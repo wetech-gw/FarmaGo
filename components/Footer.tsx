@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { getT } from "@/lib/i18n";
+import { CONTACT, telHref } from "@/lib/contact";
 
-export default function Footer() {
+export default async function Footer() {
+  const t = await getT();
+
   return (
     <footer className="bg-dark text-white pt-5 pb-3 font-sans" style={{ backgroundColor: "#0f1115 !important" }}>
       <div className="container">
@@ -14,30 +18,28 @@ export default function Footer() {
               <img src="/images/Logo.png" alt="FarmaGo" style={{ height: "50px", width: "auto" }} />
             </div>
             <p className="text-secondary lh-base m-0" style={{ maxWidth: "450px", fontSize: "0.95rem" }}>
-              Otimize o seu acesso a medicamentos com a nossa aplicação web.
-              Encontre e localize farmácias próximas rapidamente.
-              Cuidados de saúde fáceis e eficientes ao seu alcance!
+              {t("footer.aboutText")}
             </p>
           </div>
 
-          {/* Coluna 2: Nos Services */}
+          {/* Coluna 2: Os nossos serviços */}
           <div className="col-6 col-lg-3">
-            <h6 className="fw-bold mb-3 text-white">Os nossos serviços</h6>
+            <h6 className="fw-bold mb-3 text-white">{t("footer.services")}</h6>
             <ul className="list-unstyled d-flex flex-column gap-2" style={{ fontSize: "0.9rem" }}>
-              <li><Link href="/medications" className="text-secondary text-decoration-none hover-success">Medicamentos</Link></li>
-              <li><Link href="/pharmacies" className="text-secondary text-decoration-none hover-success">Farmácias</Link></li>
-              <li><Link href="/guards" className="text-secondary text-decoration-none hover-success">Farmácias de serviço</Link></li>
+              <li><Link href="/medications" className="text-secondary text-decoration-none hover-success">{t("medications")}</Link></li>
+              <li><Link href="/pharmacies" className="text-secondary text-decoration-none hover-success">{t("pharmacies")}</Link></li>
+              <li><Link href="/guards" className="text-secondary text-decoration-none hover-success">{t("footer.dutyPharmacies")}</Link></li>
             </ul>
           </div>
 
-          {/* Coluna 3: A propos */}
+          {/* Coluna 3: Sobre */}
           <div className="col-6 col-lg-3">
-            <h6 className="fw-bold mb-3 text-white">Sobre</h6>
+            <h6 className="fw-bold mb-3 text-white">{t("footer.about")}</h6>
             <ul className="list-unstyled d-flex flex-column gap-2" style={{ fontSize: "0.9rem" }}>
-              <li><Link href="/about" className="text-secondary text-decoration-none hover-success">Quem somos nós?</Link></li>
-              <li><Link href="/contact" className="text-secondary text-decoration-none hover-success">Contate-nos</Link></li>
-              <li><Link href="/privacy" className="text-secondary text-decoration-none hover-success">política de Privacidade</Link></li>
-              <li><Link href="/terms" className="text-secondary text-decoration-none hover-success">Termos e Condições</Link></li>
+              <li><Link href="/about" className="text-secondary text-decoration-none hover-success">{t("about")}</Link></li>
+              <li><Link href="/contact" className="text-secondary text-decoration-none hover-success">{t("contact")}</Link></li>
+              <li><Link href="/privacy" className="text-secondary text-decoration-none hover-success">{t("footer.privacy")}</Link></li>
+              <li><Link href="/terms" className="text-secondary text-decoration-none hover-success">{t("footer.terms")}</Link></li>
             </ul>
           </div>
 
@@ -48,13 +50,21 @@ export default function Footer() {
 
           {/* Suporte por Telefone */}
           <div className="col-12 col-md-4 text-center text-md-start">
-            <p className="text-secondary small mb-1">Tem alguma dúvida? Ligue-nos 24/7.</p>
-            <p className="fw-bold m-0 text-white" style={{ fontSize: "1.1rem" }}>+245 95 000 00 00</p>
+            <p className="text-secondary small mb-1">{t("footer.helpText")}</p>
+            <a href={telHref} className="fw-bold m-0 text-white text-decoration-none" style={{ fontSize: "1.1rem" }}>
+              {CONTACT.phone}
+            </a>
           </div>
 
           {/* Redes Sociais com Fundo Quadrado Verde Vibrante */}
           <div className="col-12 col-md-8 d-flex justify-content-center justify-content-md-end gap-2">
-            <a href="#" className="btn btn-success d-flex align-items-center justify-content-center rounded-1" style={{ width: "36px", height: "36px", backgroundColor: "#24d100", borderColor: "#24d100" }}>
+            {/*
+              Os ícones de Facebook, Twitter/X, Instagram e LinkedIn ficam
+              comentados enquanto não houverem URLs reais. O WhatsApp não é
+              repetido aqui de propósito: o botão flutuante e a página de
+              contactos já dão acesso à conversa.
+            */}
+            {/*<a href="#" className="btn btn-success d-flex align-items-center justify-content-center rounded-1" style={{ width: "36px", height: "36px", backgroundColor: "#24d100", borderColor: "#24d100" }}>
               <i className="bi bi-facebook text-white"></i>
             </a>
             <a href="#" className="btn btn-success d-flex align-items-center justify-content-center rounded-1" style={{ width: "36px", height: "36px", backgroundColor: "#24d100", borderColor: "#24d100" }}>
@@ -65,13 +75,13 @@ export default function Footer() {
             </a>
             <a href="#" className="btn btn-success d-flex align-items-center justify-content-center rounded-1" style={{ width: "36px", height: "36px", backgroundColor: "#24d100", borderColor: "#24d100" }}>
               <i className="bi bi-linkedin text-white"></i>
-            </a>
+            </a>*/}
           </div>
 
           {/* Linha de Copyright Centralizada */}
           <div className="col-12 text-center mt-4">
             <p className="text-secondary small m-0" style={{ opacity: 0.7 }}>
-              copyright ©FarmaGo 2026. todos os direitos reservados
+              {t("footer.copyright")}
             </p>
           </div>
 

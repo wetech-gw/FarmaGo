@@ -3,30 +3,61 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { SessionUser } from "@/lib/auth";
+import { useT } from "@/components/I18nProvider";
+import type { TKey } from "@/lib/i18n-core";
 
-const navLinks = [
-  { href: "/admin/dashboard",    icon: "bi-speedometer2",   label: "Dashboard"        },
-  { href: "/admin/validations",  icon: "bi-patch-check",    label: "Validações"       },
-  { href: "/admin/pharmacies",   icon: "bi-building-add",   label: "Farmácias"        },
-  { href: "/admin/medications",  icon: "bi-capsule",        label: "Medicamentos"     },
-  { href: "/admin/stock",        icon: "bi-box-seam",       label: "Stock & Validade" },
-  { href: "/admin/expenses",     icon: "bi-receipt-cutoff", label: "Despesas"         },
-  { href: "/admin/users",        icon: "bi-people",         label: "Utilizadores"     },
-  { href: "/admin/analyses",     icon: "bi-bar-chart-line", label: "Análises"         },
+const navLinks: { href: string; icon: string; labelKey: TKey; badge?: "messages" }[] = [
+  { href: "/admin/dashboard",    icon: "bi-speedometer2", labelKey: "dashboard" },
+  { href: "/admin/validations",  icon: "bi-patch-check",  labelKey: "validations" },
+  { href: "/admin/pharmacies",   icon: "bi-building-add", labelKey: "pharmacies" },
+  { href: "/admin/stock",        icon: "bi-box-seam",     labelKey: "stockValidity" },
+  { href: "/admin/users",        icon: "bi-people",       labelKey: "users" },
+  { href: "/admin/messages",     icon: "bi-chat-left-text", labelKey: "messages", badge: "messages" },
 ];
 
 export default function AdminSidebar({
   user,
   logoutAction,
+  unreadMessages = 0,
 }: {
   user: SessionUser;
   logoutAction: () => Promise<void>;
+  unreadMessages?: number;
 }) {
   const pathname = usePathname();
+  const t = useT();
 
   return (
+    <>
+    <div className="d-lg-none bg-white border-bottom px-3 py-2 position-sticky top-0" style={{ zIndex: 1020 }}>
+      <div className="d-flex align-items-center gap-2 overflow-auto">
+        <Link href="/" className="flex-shrink-0">
+          <img src="/images/Logo.png" alt="FarmaGo" style={{ height: "32px", width: "auto" }} />
+        </Link>
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`nav-link text-nowrap px-3 py-1 rounded-3 small fw-medium ${
+              pathname === link.href ? "text-dark bg-light" : "text-secondary"
+            }`}
+          >
+            <i className={`bi ${link.icon} me-1`}></i>
+            {t(link.labelKey)}
+            {link.badge === "messages" && unreadMessages > 0 && (
+              <span className="badge bg-danger rounded-pill ms-1">{unreadMessages}</span>
+            )}
+          </Link>
+        ))}
+        <form action={logoutAction} className="flex-shrink-0 ms-auto">
+          <button type="submit" className="btn btn-sm btn-outline-danger rounded-3" aria-label={t("logout")}>
+            <i className="bi bi-box-arrow-left"></i>
+          </button>
+        </form>
+      </div>
+    </div>
     <aside
-      className="bg-white border-end d-flex flex-column p-3 position-sticky top-0"
+      className="bg-white border-end d-none d-lg-flex flex-column p-3 position-sticky top-0"
       style={{ width: "260px", height: "100vh", flexShrink: 0 }}
     >
       <style>{`
@@ -66,8 +97,11 @@ export default function AdminSidebar({
                 isActive ? "text-dark bg-light" : "text-secondary"
               }`}
             >
-              <i className={`bi ${link.icon} fs-5`}></i>
-              {link.label}
+<i className={`bi ${link.icon} fs-5`}></i>
+              {t(link.labelKey)}
+              {link.badge === "messages" && unreadMessages > 0 && (
+                <span className="badge bg-danger rounded-pill ms-auto">{unreadMessages}</span>
+              )}
             </Link>
           );
         })}
@@ -85,7 +119,7 @@ export default function AdminSidebar({
             pathname === "/admin/account" ? "text-dark bg-light fw-semibold" : "text-secondary"
           }`}
         >
-          <i className="bi bi-person-gear fs-5"></i> Conta
+          <i className="bi bi-person-gear fs-5"></i> {t("account")}
         </Link>
 
         <form action={logoutAction}>
@@ -93,10 +127,11 @@ export default function AdminSidebar({
             type="submit"
             className="nav-link text-danger py-2 px-3 rounded-3 d-flex align-items-center gap-3 w-100 border-0 bg-transparent"
           >
-            <i className="bi bi-box-arrow-left fs-5"></i> Terminar sessão
+            <i className="bi bi-box-arrow-left fs-5"></i> {t("logout")}
           </button>
         </form>
       </div>
     </aside>
+    </>
   );
 }
