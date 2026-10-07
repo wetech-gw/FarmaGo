@@ -30,15 +30,18 @@ export default async function Navbar() {
               <div className="navbar-nav ms-auto align-items-lg-center gap-3 gap-lg-4">
                 {/* 3. Espaçador Direito */}
                 <div className="flex-grow-1"></div>
-                <Link href="/" className="nav-link text-secondary fw-medium small hover-success px-0">
+                <Link href="/" className="nav-link px-menu-item text-secondary fw-medium small hover-success px-0">
+                  <i className="bi bi-house d-lg-none me-2"></i>
                   {t("home")}
                 </Link>
 
-                <Link href="/about" className="nav-link text-secondary fw-medium small hover-success px-0">
+                <Link href="/about" className="nav-link px-menu-item text-secondary fw-medium small hover-success px-0">
+                  <i className="bi bi-info-circle d-lg-none me-2"></i>
                   {t("about")}
                 </Link>
 
-                <Link href="/contact" className="nav-link text-secondary fw-medium small hover-success px-0">
+                <Link href="/contact" className="nav-link px-menu-item text-secondary fw-medium small hover-success px-0">
+                  <i className="bi bi-chat-left-text d-lg-none me-2"></i>
                   {t("contact")}
                 </Link>
 
@@ -48,7 +51,7 @@ export default async function Navbar() {
                 {user ? (
                   <Link
                     href={user.role === "admin" ? "/admin/dashboard" : "/dashboard"}
-                    className="nav-link text-dark hover-success px-0 mt-1 mt-lg-0 d-flex align-items-center"
+                    className="nav-link px-menu-item text-dark hover-success px-0 mt-1 mt-lg-0 d-flex align-items-center"
                   >
                     <i className="bi bi-person-circle fs-4"></i>
                     <span className="d-none d-lg-inline small fw-medium ms-2">
@@ -59,19 +62,21 @@ export default async function Navbar() {
                   <>
                     <Link
                       href="/login"
-                      className="nav-link text-secondary fw-medium small hover-success px-0"
+                      className="nav-link px-menu-item text-secondary fw-medium small hover-success px-0"
                       >
-                        {t("login")}
-                      </Link>
+                      <i className="bi bi-box-arrow-in-right d-lg-none me-2"></i>
+                      {t("login")}
+                    </Link>
 
                     <Link
                       href="/register"
                       className="btn btn-success rounded-pill px-3 py-1 fw-medium small"
                       >
-                        {t("registerPharmacy")}
-                      </Link>
+                      {t("registerPharmacy")}
+                    </Link>
                   </>
                 )}
+
 
                 {/* <Link href="/cart" className="nav-link text-dark hover-success px-0 mt-1 mt-lg-0 position-relative">
                   <i className="bi bi-cart3 fs-4 d-none d-lg-inline"></i>

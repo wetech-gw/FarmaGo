@@ -10,6 +10,7 @@ const navLinks: { href: string; icon: string; labelKey: TKey; badge?: "messages"
   { href: "/admin/dashboard",    icon: "bi-speedometer2", labelKey: "dashboard" },
   { href: "/admin/validations",  icon: "bi-patch-check",  labelKey: "validations" },
   { href: "/admin/pharmacies",   icon: "bi-building-add", labelKey: "pharmacies" },
+  { href: "/admin/medications",  icon: "bi-capsule",      labelKey: "medications" },
   { href: "/admin/stock",        icon: "bi-box-seam",     labelKey: "stockValidity" },
   { href: "/admin/users",        icon: "bi-people",       labelKey: "users" },
   { href: "/admin/messages",     icon: "bi-chat-left-text", labelKey: "messages", badge: "messages" },

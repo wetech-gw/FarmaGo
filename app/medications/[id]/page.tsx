@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
 import { prisma } from "@/lib/prisma";
 import { medicationPlaceholder } from "@/lib/placeholders";
+import { publiclyVisibleMedicationWhere } from "@/lib/medications";
 import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +18,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const t = await getT();
 
-  const medication = await prisma.medication.findUnique({
-    where: { id: parseInt(id, 10) },
+  const medication = await prisma.medication.findFirst({
+    where: { id: parseInt(id, 10), ...publiclyVisibleMedicationWhere },
     select: { name: true, dosage: true },
   });
 
@@ -30,8 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MedicationDetailPage({ params }: Props) {
   const { id } = await params;
   const t = await getT();
-  const medication = await prisma.medication.findUnique({
-    where: { id: parseInt(id, 10) },
+  const medication = await prisma.medication.findFirst({
+    where: { id: parseInt(id, 10), ...publiclyVisibleMedicationWhere },
     include: {
       stocks: {
         where: { quantity: { gt: 0 }, pharmacy: { status: "approved" } },
@@ -41,6 +42,8 @@ export default async function MedicationDetailPage({ params }: Props) {
     },
   });
 
+  // Só o stock é público: um medicamento sem stock disponível em nenhuma
+  // farmácia validada não tem página no site, tal como não aparece no catálogo.
   if (!medication) {
     return (
       <>
@@ -60,10 +63,7 @@ export default async function MedicationDetailPage({ params }: Props) {
     (total, stock) => total + stock.quantity,
     0,
   );
-  const minPrice =
-    medication.stocks.length > 0
-      ? Math.min(...medication.stocks.map((s) => Number(s.unitPrice)))
-      : null;
+  const minPrice = Math.min(...medication.stocks.map((s) => Number(s.unitPrice)));
 
   return (
     <>
@@ -111,14 +111,12 @@ export default async function MedicationDetailPage({ params }: Props) {
                 <div className="d-flex flex-wrap gap-4 mb-4">
                   <div>
                     <small className="text-muted d-block">{t("common.status")}</small>
-                    <strong className={totalQuantity > 0 ? "text-success" : "text-danger"}>
-                      {totalQuantity > 0 ? t("common.available") : t("common.unavailable")}
-                    </strong>
+                    <strong className="text-success">{t("common.available")}</strong>
                   </div>
                   <div>
                     <small className="text-muted d-block">{t("medDetail.priceFrom")}</small>
                     <strong className="text-success">
-                      {minPrice !== null ? `${minPrice.toFixed(0)} FCFA` : t("common.notAvailableYet")}
+                      {`${minPrice.toFixed(0)} FCFA`}
                     </strong>
                   </div>
                   <div>
@@ -147,11 +145,6 @@ export default async function MedicationDetailPage({ params }: Props) {
                       </span>
                     </li>
                   ))}
-                  {medication.stocks.length === 0 && (
-                    <li className="list-group-item px-0 text-muted">
-                      {t("medDetail.noStock")}
-                    </li>
-                  )}
                 </ul>
               </div>
             </div>

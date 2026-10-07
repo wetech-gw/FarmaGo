@@ -18,9 +18,20 @@ function readQuantity(formData: FormData, t: Awaited<ReturnType<typeof getT>>): 
   return quantity;
 }
 
+function readUnitPrice(formData: FormData, t: Awaited<ReturnType<typeof getT>>): string {
+  const raw = text(formData, "unitPrice").replace(",", ".");
+  const value = Number(raw === "" ? "0" : raw);
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error(t("error.invalidUnitPrice"));
+  }
+  return value.toFixed(2);
+}
+
 function readExpiryDate(formData: FormData, t: Awaited<ReturnType<typeof getT>>): Date {
   const value = text(formData, "expiryDate");
-  const date = new Date(value);
+  // Mesma convenção do resto da app: data local ao meio-dia, para não
+  // escorregar um dia por causa do fuso horário do servidor.
+  const date = new Date(`${value}T00:00:00`);
   if (!value || Number.isNaN(date.getTime())) {
     throw new Error(t("error.invalidExpiryDate"));
   }
@@ -40,11 +51,23 @@ export async function addStock(formData: FormData): Promise<void> {
   const medicationId = Number(text(formData, "medicationId"));
   if (!pharmacyId || !medicationId) throw new Error(t("error.choosePharmacyAndMedication"));
 
+  const pharmacy = await prisma.pharmacy.findUnique({ where: { id: pharmacyId }, select: { id: true } });
+  if (!pharmacy) throw new Error(t("error.invalidPharmacy"));
+
+  // O admin abastece as farmácias a partir do catálogo global. Os medicamentos
+  // privados de cada farmácia são geridos pela própria farmácia.
+  const medication = await prisma.medication.findFirst({
+    where: { id: medicationId, pharmacyId: null },
+    select: { id: true },
+  });
+  if (!medication) throw new Error(t("error.medicationNotInCatalog"));
+
   await prisma.pharmacyStock.create({
     data: {
       pharmacyId,
       medicationId,
       quantity: readQuantity(formData, t),
+      unitPrice: readUnitPrice(formData, t),
       expiryDate: readExpiryDate(formData, t),
       batchNumber: text(formData, "batchNumber") || null,
     },
@@ -65,6 +88,7 @@ export async function updateStock(formData: FormData): Promise<void> {
     where: { id },
     data: {
       quantity:    readQuantity(formData, t),
+      unitPrice:   readUnitPrice(formData, t),
       expiryDate:  readExpiryDate(formData, t),
       batchNumber: text(formData, "batchNumber") || null,
     },

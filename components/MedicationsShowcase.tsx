@@ -4,11 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import MedicationCard from "./MedicationCard";
 import { useI18n } from "@/components/I18nProvider";
-import type {
-  AvailabilityFilter,
-  MedicationListItem,
-  MedicationSort,
-} from "@/types/medication";
+import type { MedicationListItem, MedicationSort } from "@/types/medication";
 
 interface Props {
   medications: MedicationListItem[];
@@ -21,12 +17,6 @@ interface Props {
   accent?: string;
   description?: string;
 }
-
-const AVAILABILITY_FILTERS: { value: AvailabilityFilter; icon: string }[] = [
-  { value: "all", icon: "bi-grid-3x3-gap" },
-  { value: "available", icon: "bi-check2-circle" },
-  { value: "unavailable", icon: "bi-dash-circle" },
-];
 
 const SORTS: { value: MedicationSort }[] = [
   { value: "name" },
@@ -54,33 +44,12 @@ export default function MedicationsShowcase({
 }: Props) {
   const { locale, t } = useI18n();
   const [query, setQuery] = useState("");
-  const [availability, setAvailability] = useState<AvailabilityFilter>("all");
   const [sort, setSort] = useState<MedicationSort>("name");
-
-  const availableCount = medications.filter((med) => med.inStock).length;
-
-  const countFor = (value: AvailabilityFilter) => {
-    if (value === "available") return availableCount;
-    if (value === "unavailable") return medications.length - availableCount;
-    return medications.length;
-  };
-
-  const labelFor = (value: AvailabilityFilter) => {
-    if (value === "available") return t("meds.filterAvailable");
-    if (value === "unavailable") return t("meds.filterUnavailable");
-    return t("meds.filterAll");
-  };
 
   const results = useMemo(() => {
     const term = normalize(query.trim());
 
     const filtered = medications.filter((med) => {
-      const matchesAvailability =
-        availability === "all" ||
-        (availability === "available" && med.inStock) ||
-        (availability === "unavailable" && !med.inStock);
-
-      if (!matchesAvailability) return false;
       if (!term) return true;
 
       return (
@@ -99,13 +68,12 @@ export default function MedicationsShowcase({
     });
 
     return typeof limit === "number" ? sorted.slice(0, limit) : sorted;
-  }, [medications, query, availability, sort, limit, locale]);
+  }, [medications, query, sort, limit, locale]);
 
-  const hasFilters = query.trim().length > 0 || availability !== "all";
+  const hasFilters = query.trim().length > 0;
 
   const resetFilters = () => {
     setQuery("");
-    setAvailability("all");
   };
 
   return (
@@ -124,13 +92,9 @@ export default function MedicationsShowcase({
           <p className="med-showcase-desc">{description ?? t("medsPage.showcaseDescription")}</p>
 
           <div className="med-stats">
-            <span className="med-stat">
-              <i className="bi bi-journal-medical" aria-hidden="true"></i>
-              <strong>{medications.length}</strong> {t("meds.inCatalog")}
-            </span>
             <span className="med-stat med-stat--ok">
               <i className="bi bi-check2-circle" aria-hidden="true"></i>
-              <strong>{availableCount}</strong> {t("meds.availableCount")}
+              <strong>{medications.length}</strong> {t("meds.availableCount")}
             </span>
           </div>
         </header>
@@ -156,22 +120,6 @@ export default function MedicationsShowcase({
                   <i className="bi bi-x-lg" aria-hidden="true"></i>
                 </button>
               )}
-            </div>
-
-            <div className="med-chips" role="group" aria-label={t("meds.filterGroup")}>
-              {AVAILABILITY_FILTERS.map((filter) => (
-                <button
-                  key={filter.value}
-                  type="button"
-                  className={`med-chip ${availability === filter.value ? "is-active" : ""}`}
-                  onClick={() => setAvailability(filter.value)}
-                  aria-pressed={availability === filter.value}
-                >
-                  <i className={`bi ${filter.icon}`} aria-hidden="true"></i>
-                  {labelFor(filter.value)}
-                  <span className="med-chip-count">{countFor(filter.value)}</span>
-                </button>
-              ))}
             </div>
 
             <div className="med-sort">

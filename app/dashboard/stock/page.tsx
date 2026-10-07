@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getSelectableMedications } from "@/lib/medications";
 import { AdminImageThumb } from "@/components/AdminImageThumb";
 import { saveStock, deleteStock } from "../actions";
 import ConfirmDeleteButton from "@/components/ConfirmDeleteButton";
@@ -18,7 +19,7 @@ type StockEditing = {
   batchNumber: string | null;
 };
 
-type MedicationOption = { id: number; name: string; dosage: string };
+type MedicationOption = { id: number; name: string; dosage: string; isPrivate: boolean };
 
 function StockForm({
   editing,
@@ -34,6 +35,8 @@ function StockForm({
   labels: {
     medication: string;
     chooseMedication: string;
+    catalogGroup: string;
+    myMedsGroup: string;
     cancel: string;
     quantity: string;
     expiry: string;
@@ -42,6 +45,18 @@ function StockForm({
     alreadyInStock: string;
   };
 }) {
+  const catalog = medications.filter((medication) => !medication.isPrivate);
+  const own = medications.filter((medication) => medication.isPrivate);
+
+  const renderOption = (medication: MedicationOption) => (
+    <option key={medication.id} value={medication.id}>
+      {medication.name} — {medication.dosage}
+      {available.has(medication.id) && editing?.medicationId !== medication.id
+        ? labels.alreadyInStock
+        : ""}
+    </option>
+  );
+
   return (
     <form action={saveStock} className="row g-3 align-items-end">
       {editing && <input type="hidden" name="id" value={editing.id} />}
@@ -58,14 +73,12 @@ function StockForm({
           required
         >
           <option value="" disabled>{labels.chooseMedication}</option>
-          {medications.map((medication) => (
-            <option key={medication.id} value={medication.id}>
-              {medication.name} — {medication.dosage}
-              {available.has(medication.id) && editing?.medicationId !== medication.id
-                ? labels.alreadyInStock
-                : ""}
-            </option>
-          ))}
+          {catalog.length > 0 && (
+            <optgroup label={labels.catalogGroup}>{catalog.map(renderOption)}</optgroup>
+          )}
+          {own.length > 0 && (
+            <optgroup label={labels.myMedsGroup}>{own.map(renderOption)}</optgroup>
+          )}
         </select>
       </div>
 
@@ -168,10 +181,7 @@ export default async function DashboardStockPage({
       include: { medication: true },
       orderBy: [{ quantity: "asc" }, { expiryDate: "asc" }],
     }),
-    prisma.medication.findMany({
-      where: { pharmacyId },
-      orderBy: { name: "asc" },
-    }),
+    getSelectableMedications(pharmacyId),
   ]);
 
   const editingId = edit ? Number(edit) : null;
@@ -183,6 +193,8 @@ export default async function DashboardStockPage({
   const formLabels = {
     medication: t("common.medication"),
     chooseMedication: t("dash.chooseMedication"),
+    catalogGroup: t("dash.catalogGroup"),
+    myMedsGroup: t("dash.myMedsGroup"),
     cancel: t("common.cancel"),
     quantity: t("common.quantity"),
     expiry: t("common.expiry"),

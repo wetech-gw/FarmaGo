@@ -170,6 +170,7 @@ const pt = {
   "common.withoutPhone": "Sem telefone",
   "common.mainNavigation": "Navegação principal",
   "common.toggleNavigation": "Alternar navegação",
+  "common.language": "Idioma",
   "common.breadcrumb": "Caminho de navegação",
   "common.requiredField": "Campo obrigatório",
   "common.itemsCount": { one: "{count} item", other: "{count} itens" },
@@ -501,6 +502,8 @@ const pt = {
   "error.pharmacyNotFound": "Farmácia não encontrada.",
   "error.notYourPharmacy": "Registo não pertence à sua farmácia.",
   "error.medicationNotYours": "Medicamento não pertence à sua farmácia.",
+  "error.medicationNotSelectable":
+    "Medicamento indisponível: escolha um do catálogo FarmaGo ou um dos seus.",
   "error.expenseNotYours": "Despesa não pertence à sua farmácia.",
   "error.saleNotYours": "Venda não pertence à sua farmácia.",
   "error.nameAddressPhoneRequired": "Nome, morada e telefone são obrigatórios.",
@@ -513,6 +516,8 @@ const pt = {
   "error.invalidStockEntry": "Entrada de stock inválida.",
   "error.invalidQuantity": "Quantidade inválida.",
   "error.invalidExpiryDate": "Data de validade inválida.",
+  "error.invalidUnitPrice": "Preço unitário inválido.",
+  "error.medicationNotInCatalog": "Escolha um medicamento do catálogo FarmaGo.",
   "error.choosePharmacyAndMedication": "Escolha a farmácia e o medicamento.",
   "error.fillOwnerNameAddressPhone": "Preencha proprietário, nome, morada e telefone.",
   "error.ownerMustBePharmacist": "O proprietário tem de ser uma conta de farmacêutico.",
@@ -593,6 +598,8 @@ const pt = {
   "dash.addToStock": "Adicionar medicamento ao stock",
   "dash.addToStockButton": "Adicionar ao stock",
   "dash.chooseMedication": "Escolher medicamento…",
+  "dash.catalogGroup": "Catálogo FarmaGo",
+  "dash.myMedsGroup": "Os meus medicamentos",
   "dash.alreadyInStock": " (já em stock)",
   "dash.stockEmpty": "Ainda não registou stock. Use o formulário acima.",
   "dash.deleteStockConfirm": "Tem a certeza que deseja apagar este item de stock?",
@@ -600,7 +607,7 @@ const pt = {
   // Os meus medicamentos
   "dash.medsTitle": "Os meus medicamentos",
   "dash.medsSubtitle":
-    "Cadastre os medicamentos da sua farmácia para os usar no stock e nas vendas.",
+    "O catálogo FarmaGo que o admin cadastrou, mais os medicamentos privados desta farmácia.",
   "dash.medName": "Nome",
   "dash.medDosage": "Dosagem",
   "dash.medDosagePlaceholder": "ex: 500mg, frasco 120ml",
@@ -772,6 +779,9 @@ const pt = {
   "admin.allStockEntries": "Todas as Entradas de Stock",
   "admin.stockFor": "Stock — {name}",
   "admin.noStockFound": "Nenhum stock encontrado.",
+  "admin.choosePharmacy": "Escolher farmácia…",
+  "admin.stockAddHint":
+    "Coloca um medicamento do catálogo no stock de uma farmácia. Só aparece no site depois disto — o admin não vende.",
   "admin.expired": "Caducado",
   "admin.ok": "OK",
 
@@ -785,6 +795,10 @@ const pt = {
     other: "{count} farmácias",
   },
   "admin.noMedicationsInCatalog": "Nenhum medicamento no catálogo.",
+  "admin.medsPrivateNote":
+    "{count} medicamentos privados criados por farmácias — não fazem parte do catálogo.",
+  "admin.medsCatalogHint":
+    "As farmácias escolhem estes medicamentos no formulário de stock.",
 
   // Administração — análises
   "admin.analysesTitle": "Análises",
@@ -931,6 +945,7 @@ const en: Record<TKey, Entry> = {
   "common.withoutPhone": "No phone",
   "common.mainNavigation": "Main navigation",
   "common.toggleNavigation": "Toggle navigation",
+  "common.language": "Language",
   "common.breadcrumb": "Breadcrumb",
   "common.requiredField": "Required field",
   "common.itemsCount": { one: "{count} item", other: "{count} items" },
@@ -1240,6 +1255,8 @@ const en: Record<TKey, Entry> = {
   "error.pharmacyNotFound": "Pharmacy not found.",
   "error.notYourPharmacy": "This record does not belong to your pharmacy.",
   "error.medicationNotYours": "This medication does not belong to your pharmacy.",
+  "error.medicationNotSelectable":
+    "Medication unavailable: choose one from the FarmaGo catalog or one of your own.",
   "error.expenseNotYours": "This expense does not belong to your pharmacy.",
   "error.saleNotYours": "This sale does not belong to your pharmacy.",
   "error.nameAddressPhoneRequired": "Name, address and phone are required.",
@@ -1252,6 +1269,8 @@ const en: Record<TKey, Entry> = {
   "error.invalidStockEntry": "Invalid stock entry.",
   "error.invalidQuantity": "Invalid quantity.",
   "error.invalidExpiryDate": "Invalid expiry date.",
+  "error.invalidUnitPrice": "Invalid unit price.",
+  "error.medicationNotInCatalog": "Choose a medication from the FarmaGo catalog.",
   "error.choosePharmacyAndMedication": "Choose the pharmacy and the medication.",
   "error.fillOwnerNameAddressPhone": "Please fill in owner, name, address and phone.",
   "error.ownerMustBePharmacist": "The owner must be a pharmacist account.",
@@ -1329,13 +1348,15 @@ const en: Record<TKey, Entry> = {
   "dash.addToStock": "Add medication to stock",
   "dash.addToStockButton": "Add to stock",
   "dash.chooseMedication": "Choose medication…",
+  "dash.catalogGroup": "FarmaGo catalog",
+  "dash.myMedsGroup": "My medications",
   "dash.alreadyInStock": " (already in stock)",
   "dash.stockEmpty": "You have not registered any stock yet. Use the form above.",
   "dash.deleteStockConfirm": "Are you sure you want to delete this stock item?",
 
   "dash.medsTitle": "My medications",
   "dash.medsSubtitle":
-    "Register your pharmacy medications to use them in stock and sales.",
+    "The FarmaGo catalog registered by the admin, plus this pharmacy's private medications.",
   "dash.medName": "Name",
   "dash.medDosage": "Dosage",
   "dash.medDosagePlaceholder": "e.g: 500mg, 120ml bottle",
@@ -1491,6 +1512,9 @@ const en: Record<TKey, Entry> = {
   "admin.allStockEntries": "All Stock Entries",
   "admin.stockFor": "Stock — {name}",
   "admin.noStockFound": "No stock found.",
+  "admin.choosePharmacy": "Choose pharmacy…",
+  "admin.stockAddHint":
+    "Puts a catalog medication into a pharmacy's stock. It only shows on the site after this — the admin does not sell.",
   "admin.expired": "Expired",
   "admin.ok": "OK",
 
@@ -1503,6 +1527,10 @@ const en: Record<TKey, Entry> = {
     other: "{count} pharmacies",
   },
   "admin.noMedicationsInCatalog": "No medications in the catalog.",
+  "admin.medsPrivateNote":
+    "{count} private medications created by pharmacies — not part of the catalog.",
+  "admin.medsCatalogHint":
+    "Pharmacies pick these medications in the stock form.",
 
   "admin.analysesTitle": "Analytics",
   "admin.analysesSubtitle": "Financial and operational summary",
@@ -1644,6 +1672,7 @@ const fr: Record<TKey, Entry> = {
   "common.withoutPhone": "Sans téléphone",
   "common.mainNavigation": "Navigation principale",
   "common.toggleNavigation": "Basculer la navigation",
+  "common.language": "Langue",
   "common.breadcrumb": "Fil d'Ariane",
   "common.requiredField": "Champ obligatoire",
   "common.itemsCount": { one: "{count} article", other: "{count} articles" },
@@ -1954,6 +1983,8 @@ const fr: Record<TKey, Entry> = {
   "error.pharmacyNotFound": "Pharmacie introuvable.",
   "error.notYourPharmacy": "Cet enregistrement n'appartient pas à votre pharmacie.",
   "error.medicationNotYours": "Ce médicament n'appartient pas à votre pharmacie.",
+  "error.medicationNotSelectable":
+    "Médicament indisponible : choisissez-en un dans le catalogue FarmaGo ou l'un des vôtres.",
   "error.expenseNotYours": "Cette dépense n'appartient pas à votre pharmacie.",
   "error.saleNotYours": "Cette vente n'appartient pas à votre pharmacie.",
   "error.nameAddressPhoneRequired": "Le nom, l'adresse et le téléphone sont obligatoires.",
@@ -1966,6 +1997,8 @@ const fr: Record<TKey, Entry> = {
   "error.invalidStockEntry": "Entrée de stock invalide.",
   "error.invalidQuantity": "Quantité invalide.",
   "error.invalidExpiryDate": "Date de validité invalide.",
+  "error.invalidUnitPrice": "Prix unitaire invalide.",
+  "error.medicationNotInCatalog": "Choisissez un médicament du catalogue FarmaGo.",
   "error.choosePharmacyAndMedication": "Choisissez la pharmacie et le médicament.",
   "error.fillOwnerNameAddressPhone": "Veuillez renseigner le propriétaire, le nom, l'adresse et le téléphone.",
   "error.ownerMustBePharmacist": "Le propriétaire doit être un compte pharmacien.",
@@ -2043,13 +2076,15 @@ const fr: Record<TKey, Entry> = {
   "dash.addToStock": "Ajouter un médicament au stock",
   "dash.addToStockButton": "Ajouter au stock",
   "dash.chooseMedication": "Choisir un médicament…",
+  "dash.catalogGroup": "Catalogue FarmaGo",
+  "dash.myMedsGroup": "Mes médicaments",
   "dash.alreadyInStock": " (déjà en stock)",
   "dash.stockEmpty": "Vous n'avez pas encore enregistré de stock. Utilisez le formulaire ci-dessus.",
   "dash.deleteStockConfirm": "Voulez-vous vraiment supprimer cet article de stock ?",
 
   "dash.medsTitle": "Mes médicaments",
   "dash.medsSubtitle":
-    "Enregistrez les médicaments de votre pharmacie pour les utiliser dans le stock et les ventes.",
+    "Le catalogue FarmaGo enregistré par l'admin, plus les médicaments privés de cette pharmacie.",
   "dash.medName": "Nom",
   "dash.medDosage": "Dosage",
   "dash.medDosagePlaceholder": "ex : 500 mg, flacon 120 ml",
@@ -2206,6 +2241,9 @@ const fr: Record<TKey, Entry> = {
   "admin.allStockEntries": "Toutes les entrées de stock",
   "admin.stockFor": "Stock — {name}",
   "admin.noStockFound": "Aucun stock trouvé.",
+  "admin.choosePharmacy": "Choisir une pharmacie…",
+  "admin.stockAddHint":
+    "Place un médicament du catalogue dans le stock d'une pharmacie. Il n'apparaît sur le site qu'après cela — l'admin ne vend pas.",
   "admin.expired": "Expiré",
   "admin.ok": "OK",
 
@@ -2218,6 +2256,10 @@ const fr: Record<TKey, Entry> = {
     other: "{count} pharmacies",
   },
   "admin.noMedicationsInCatalog": "Aucun médicament au catalogue.",
+  "admin.medsPrivateNote":
+    "{count} médicaments privés créés par des pharmacies — hors catalogue.",
+  "admin.medsCatalogHint":
+    "Les pharmacies choisissent ces médicaments dans le formulaire de stock.",
 
   "admin.analysesTitle": "Analyses",
   "admin.analysesSubtitle": "Synthèse financière et opérationnelle",

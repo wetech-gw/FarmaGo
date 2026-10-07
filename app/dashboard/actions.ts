@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requirePharmacy } from "@/lib/auth";
+import { selectableMedicationWhere } from "@/lib/medications";
 import { getT } from "@/lib/i18n";
 
 /** Confirma que o registo pertence à farmácia da sessão. */
@@ -71,6 +72,14 @@ export async function saveStock(formData: FormData): Promise<void> {
   if (!medicationId || !expiry) {
     throw new Error(t("error.chooseMedicationAndExpiry"));
   }
+
+  // Só o catálogo do admin (pharmacyId = null) ou um medicamento privado da
+  // própria farmácia podem entrar no stock — nunca os de outra farmácia.
+  const medication = await prisma.medication.findFirst({
+    where: { id: medicationId, ...selectableMedicationWhere(pharmacyId) },
+    select: { id: true },
+  });
+  if (!medication) throw new Error(t("error.medicationNotSelectable"));
 
   const data = {
     quantity,

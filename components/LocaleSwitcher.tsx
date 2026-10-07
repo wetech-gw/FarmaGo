@@ -4,26 +4,37 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/components/I18nProvider";
 import { LOCALES, persistLocale, type Locale } from "@/lib/i18n-core";
 
-export default function LocaleSwitcher() {
+export default function LocaleSwitcher({ className = "" }: { className?: string }) {
   const router = useRouter();
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
 
   return (
-    <select
-      className="form-select form-select-sm rounded-3"
-      style={{ width: "auto" }}
-      value={locale}
-      aria-label={LOCALES.map((item) => item.label).join(" / ")}
-      onChange={(event) => {
-        persistLocale(event.target.value as Locale);
-        router.refresh();
-      }}
+    <div
+      className={`px-locale${className ? ` ${className}` : ""}`}
+      role="group"
+      aria-label={t("common.language")}
     >
-      {LOCALES.map((item) => (
-        <option key={item.value} value={item.value}>
-          {item.short}
-        </option>
-      ))}
-    </select>
+      {LOCALES.map((item) => {
+        const active = item.value === locale;
+
+        return (
+          <button
+            key={item.value}
+            type="button"
+            className={`px-locale-btn${active ? " is-active" : ""}`}
+            aria-pressed={active}
+            lang={item.intl}
+            title={item.label}
+            onClick={() => {
+              if (active) return;
+              persistLocale(item.value as Locale);
+              router.refresh();
+            }}
+          >
+            {item.short}
+          </button>
+        );
+      })}
+    </div>
   );
 }
