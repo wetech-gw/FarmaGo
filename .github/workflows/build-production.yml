@@ -1,0 +1,73 @@
+name: Build FarmaGO Production
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          NODE_ENV: production
+          DATABASE_HOST: localhost
+          DATABASE_PORT: "3306"
+          DATABASE_NAME: farmago_build
+          DATABASE_USER: build
+          DATABASE_PASSWORD: build
+          DATABASE_URL: mysql://build:build@localhost:3306/farmago_build
+
+      - name: Prepare standalone package
+        run: |
+          mkdir -p .next/standalone/.next/static
+          cp -r .next/static/. .next/standalone/.next/static/
+
+          if [ -d public ]; then
+            cp -r public .next/standalone/public
+          fi
+
+      - name: Verify Linux standalone
+        run: |
+          echo "=== Native dependencies ==="
+          find .next/standalone/node_modules -type f \( -name "*.node" -o -name "*.dll" -o -name "*.exe" \) | head -50 || true
+
+          echo "=== Windows path check ==="
+          if grep -q 'C:\\Users\\' .next/standalone/server.js; then
+            echo "ERROR: Windows path detected"
+            exit 1
+          fi
+
+          echo "=== Standalone ==="
+          ls -lah .next/standalone
+
+      - name: Create deployment archive
+        run: |
+          cd .next/standalone
+          tar -czf ../../../farmago-linux.tar.gz .
+
+      - name: Upload production artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: farmago-linux
+          path: farmago-linux.tar.gz
+          retention-days: 7
