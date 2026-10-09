@@ -63,11 +63,12 @@ jobs:
       - name: Create deployment archive
         run: |
           tar -czf farmago-linux.tar.gz -C .next/standalone .
-    	  ls -lh farmago-linux.tar.gz
+          ls -lh farmago-linux.tar.gz
 
       - name: Upload production artifact
         uses: actions/upload-artifact@v4
         with:
           name: farmago-linux
           path: farmago-linux.tar.gz
+          if-no-files-found: error
           retention-days: 7
