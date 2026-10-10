@@ -62,16 +62,27 @@ async function main() {
   });
 
   // --- Medicamentos ---
+  const medImages = [
+    "/images/medications/1790848509836-8970c16a-a1a0-42cb-99ad-5f6c3bbb8587.png",
+    "/images/medications/1790848583869-340db999-b4a1-4abe-9060-da53c29071cb.jpeg",
+    "/images/medications/1790848605062-2c75946c-632d-41ed-b148-9d3f0d895a6a.jpg",
+    "/images/medications/1790848640610-13f99968-20e4-4013-a95e-f56426d953ce.jpeg",
+    "/images/medications/1790848671004-a2e27924-de64-4a67-b024-3f600e10afe0.jpeg",
+    "/images/medications/1790848688053-3e2d66d1-d621-4090-9f80-8a2cd3fe9bf7.jpeg",
+    "/images/medications/1790848702718-c49d5900-d750-46d8-890b-373ec5326167.jpeg",
+    "/images/medications/1790848722764-1556192d-220b-448d-afd0-759004e2e703.jpeg",
+  ];
+
   const [panadol, doliprane, antidol, smectalia, imodium, hydroxyd, amoxil, brufen] =
     await Promise.all([
-      prisma.medication.create({ data: { name: "Panadol",   dosage: "500mg",  description: "Analgésico e antipirético à base de paracetamol.", needsPrescription: false } }),
-      prisma.medication.create({ data: { name: "Doliprane", dosage: "1000mg", description: "Comprimido efervescente com paracetamol.", needsPrescription: false } }),
-      prisma.medication.create({ data: { name: "Antidol",   dosage: "500mg",  description: "Analgésico de ação rápida.", needsPrescription: false } }),
-      prisma.medication.create({ data: { name: "Smectalia", dosage: "3g",     description: "Tratamento da diarreia aguda.", needsPrescription: false } }),
-      prisma.medication.create({ data: { name: "Imodium",   dosage: "2mg",    description: "Controlo de diarreia.", needsPrescription: false } }),
-      prisma.medication.create({ data: { name: "Hydroxyd",  dosage: "500mg",  description: "Anti-histamínico para alergias.", needsPrescription: false } }),
-      prisma.medication.create({ data: { name: "Amoxil",    dosage: "250mg",  description: "Antibiótico de largo espetro.", needsPrescription: true } }),
-      prisma.medication.create({ data: { name: "Brufen",    dosage: "400mg",  description: "Anti-inflamatório não esteroide.", needsPrescription: false } }),
+      prisma.medication.create({ data: { name: "Panadol",   dosage: "500mg",  image: medImages[0], description: "Analgésico e antipirético à base de paracetamol.", needsPrescription: false } }),
+      prisma.medication.create({ data: { name: "Doliprane", dosage: "1000mg", image: medImages[1], description: "Comprimido efervescente com paracetamol.", needsPrescription: false } }),
+      prisma.medication.create({ data: { name: "Antidol",   dosage: "500mg",  image: medImages[2], description: "Analgésico de ação rápida.", needsPrescription: false } }),
+      prisma.medication.create({ data: { name: "Smectalia", dosage: "3g",     image: medImages[3], description: "Tratamento da diarreia aguda.", needsPrescription: false } }),
+      prisma.medication.create({ data: { name: "Imodium",   dosage: "2mg",    image: medImages[4], description: "Controlo de diarreia.", needsPrescription: false } }),
+      prisma.medication.create({ data: { name: "Hydroxyd",  dosage: "500mg",  image: medImages[5], description: "Anti-histamínico para alergias.", needsPrescription: false } }),
+      prisma.medication.create({ data: { name: "Amoxil",    dosage: "250mg",  image: medImages[6], description: "Antibiótico de largo espetro.", needsPrescription: true } }),
+      prisma.medication.create({ data: { name: "Brufen",    dosage: "400mg",  image: medImages[7], description: "Anti-inflamatório não esteroide.", needsPrescription: false } }),
     ]);
 
   // --- Farmácias ---

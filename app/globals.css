@@ -1,4 +1,6 @@
-﻿:root {
+@import "tailwindcss" layer(base);
+
+:root {
   --px-green: #15b312;
   --px-green-dark: #0d8b0c;
   --px-green-soft: #eafaf0;
@@ -585,8 +587,8 @@ body {
   gap: 0.5rem;
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
-  background: linear-gradient(120deg, var(--px-green) 0%, var(--px-green-dark) 100%);
-  color: #fff;
+  background: linear-gradient(120deg, var(--px-green) 0%, var(--px-green-dark) 100%) !important;
+  color: #fff !important;
   font-size: 0.78rem;
   font-weight: 700;
   text-decoration: none;
@@ -2183,19 +2185,21 @@ body {
   --px-burger-size: 2.85rem;
 }
 
-/* Sem !important no display: o globals.css entra depois do bootstrap.min.css,
-   então um !important aqui venceria o .d-lg-none e o burger vazaria no desktop.
-   Com a especificidade 0,2,0 e sem !important, o d-lg-none do Bootstrap
-   continua a ganhar a partir de 992px. */
-.px-burger.navbar-toggler {
+@media (min-width: 992px) {
+  .px-burger.navbar-toggler {
+    display: none !important;
+  }
+}
+
+.px-burger.navbar-toggler.px-burger {
   display: grid;
   place-items: center;
-  width: var(--px-burger-size);
-  height: var(--px-burger-size);
-  padding: 0;
+  width: var(--px-burger-size) !important;
+  height: var(--px-burger-size) !important;
+  padding: 0 !important;
   border: 1px solid var(--px-line) !important;
   border-radius: 1rem;
-  background: #ffffff;
+  background: #ffffff !important;
   box-shadow: var(--px-shadow-sm);
   transition: background-color 0.3s ease, border-color 0.3s ease,
     box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
