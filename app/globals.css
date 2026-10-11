@@ -2305,6 +2305,42 @@ body {
   transform: none;
 }
 
+/* X de fechar na posição do burger (mobile), mostrado quando o menu abre. */
+.px-burger-close {
+  display: grid;
+  place-items: center;
+  width: var(--px-burger-size) !important;
+  height: var(--px-burger-size) !important;
+  padding: 0 !important;
+  border: 1px solid var(--px-green) !important;
+  border-radius: 1rem;
+  background: var(--px-green) !important;
+  box-shadow: 0 14px 30px -12px rgba(21, 179, 18, 0.75);
+  color: #ffffff;
+  font-size: 1.5rem;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.px-burger-close:hover {
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 18px 34px -12px rgba(21, 179, 18, 0.85);
+}
+
+.px-burger-close:focus-visible {
+  outline: 2px solid var(--px-green);
+  outline-offset: 3px;
+}
+
+.px-burger-close:active {
+  transform: scale(0.94);
+}
+
+/* Quando o menu abre, o burger sai e o X fica no seu lugar. */
+.px-burger.navbar-toggler.is-open {
+  display: none !important;
+}
+
 .px-menu .navbar-nav {
   gap: 0.35rem;
 }

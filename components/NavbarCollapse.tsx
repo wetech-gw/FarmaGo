@@ -45,6 +45,17 @@ export default function NavbarCollapse({ children }: { children: React.ReactNode
       </button>
 
       {open && (
+        <button
+          type="button"
+          className="px-burger-close d-lg-none"
+          onClick={close}
+          aria-label={t("common.close")}
+        >
+          <i className="bi bi-x-lg" aria-hidden="true" />
+        </button>
+      )}
+
+      {open && (
         <div className="px-menu-backdrop d-lg-none" onClick={close} aria-hidden="true" />
       )}
 
