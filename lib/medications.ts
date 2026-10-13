@@ -83,22 +83,49 @@ export async function getMedicationRows(
 }
 
 /**
- * Condição de visibilidade pública de um medicamento: só existe para os
- * clientes se alguma farmácia validada tem stock com quantidade > 0.
- * Um medicamento que o admin cadastrou no catálogo, mas que ninguém pôs em
- * stock, é uma ficha interna — não aparece em lado nenhum do site.
+ * Data de hoje à meia-noite. O stock conta até ao fim do dia de validade:
+ * um lote que caduca hoje ainda pode ser vendido hoje, um lote de ontem não.
  */
-export const publiclyVisibleMedicationWhere = {
-  stocks: { some: { quantity: { gt: 0 }, pharmacy: { status: "approved" } } },
-} as const;
+function startOfToday(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+/**
+ * Condição de um stock visível ao público: quantidade > 0, farmácia validada
+ * e validade ainda em dia. Um lote caducado deixa de contar para o público —
+ * a farmácia continua a vê-lo no dashboard, mas o catálogo, o detalhe do
+ * medicamento e o scanner ignoram-no.
+ */
+export function publicStockWhere() {
+  return {
+    quantity: { gt: 0 },
+    pharmacy: { status: "approved" },
+    expiryDate: { gte: startOfToday() },
+  } as const;
+}
+
+/**
+ * Condição de visibilidade pública de um medicamento: só existe para os
+ * clientes se alguma farmácia validada tem stock válido (quantidade > 0 e
+ * validade em dia). Um medicamento que o admin cadastrou no catálogo, mas que
+ * ninguém pôs em stock — ou cujo stock já caducou — é uma ficha interna: não
+ * aparece em lado nenhum do site.
+ *
+ * É uma função (e não uma constante) porque a validade depende do dia de hoje
+ * e o servidor fica dias ligado.
+ */
+export function publiclyVisibleMedicationWhere() {
+  return { stocks: { some: publicStockWhere() } } as const;
+}
 
 export async function getMedicationsWithAvailability(): Promise<MedicationListItem[]> {
   const medications = await prisma.medication.findMany({
-    where: publiclyVisibleMedicationWhere,
+    where: publiclyVisibleMedicationWhere(),
     include: {
       stocks: {
-        // Só conta farmácias validadas e com quantidade disponível.
-        where: { quantity: { gt: 0 }, pharmacy: { status: "approved" } },
+        // Só conta farmácias validadas, com quantidade e validade em dia.
+        where: publicStockWhere(),
         select: { pharmacyId: true, quantity: true, unitPrice: true },
       },
     },
@@ -125,3 +152,4 @@ export async function getMedicationsWithAvailability(): Promise<MedicationListIt
     };
   });
 }
+

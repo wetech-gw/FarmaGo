@@ -5,7 +5,10 @@ import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
 import { prisma } from "@/lib/prisma";
 import { medicationPlaceholder } from "@/lib/placeholders";
-import { publiclyVisibleMedicationWhere } from "@/lib/medications";
+import {
+  publicStockWhere,
+  publiclyVisibleMedicationWhere,
+} from "@/lib/medications";
 import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getT();
 
   const medication = await prisma.medication.findFirst({
-    where: { id: parseInt(id, 10), ...publiclyVisibleMedicationWhere },
+    where: { id: parseInt(id, 10), ...publiclyVisibleMedicationWhere() },
     select: { name: true, dosage: true },
   });
 
@@ -32,10 +35,11 @@ export default async function MedicationDetailPage({ params }: Props) {
   const { id } = await params;
   const t = await getT();
   const medication = await prisma.medication.findFirst({
-    where: { id: parseInt(id, 10), ...publiclyVisibleMedicationWhere },
+    where: { id: parseInt(id, 10), ...publiclyVisibleMedicationWhere() },
     include: {
       stocks: {
-        where: { quantity: { gt: 0 }, pharmacy: { status: "approved" } },
+        // Só farmácias validadas, com stock e validade em dia.
+        where: publicStockWhere(),
         include: { pharmacy: true },
         orderBy: { unitPrice: "asc" },
       },

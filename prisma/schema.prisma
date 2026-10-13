@@ -165,8 +165,8 @@ model SaleItem {
   quantity     Int
   unitPrice    Decimal    @map("unit_price") @db.Decimal(10, 2)
   subtotal     Decimal    @db.Decimal(10, 2)
-  medication   Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
-  sale         Sale       @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  medication   Medication   @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  sale         Sale         @relation(fields: [saleId], references: [id], onDelete: Cascade)
 
   @@index([saleId])
   @@index([medicationId], map: "sale_items_medication_id_fkey")

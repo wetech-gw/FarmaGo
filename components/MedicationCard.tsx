@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useT } from "@/components/I18nProvider";
 import { medicationPlaceholder } from "@/lib/placeholders";
+import { addMedicationToCart, removeFromCart, useCart } from "@/lib/cart";
 
 interface Medication {
   id: number;
@@ -20,10 +21,22 @@ interface Props {
   med: Medication;
   href?: string;
   showAvailability?: boolean;
+  /** Botão de adicionar ao carrinho (activado em todas as listas do catálogo). */
+  showCart?: boolean;
+  /** Botão de remover ao lado do detalhe (usado na página do carrinho). */
+  onRemove?: () => void;
 }
 
-export default function MedicationCard({ med, href, showAvailability = true }: Props) {
+export default function MedicationCard({
+  med,
+  href,
+  showAvailability = true,
+  showCart = true,
+  onRemove,
+}: Props) {
   const t = useT();
+  const { items: cartItems } = useCart();
+  const inCart = cartItems.some((item) => item.medicationId === med.id);
 
   const src = med.image ?? medicationPlaceholder(med.name);
   const hasAvailability = showAvailability && typeof med.inStock === "boolean";
@@ -86,10 +99,36 @@ export default function MedicationCard({ med, href, showAvailability = true }: P
           </span>
         </div>
 
-        <Link href={detailHref} className="med-cta">
-          {t("meds.seeDetails")}
-          <i className="bi bi-arrow-right" aria-hidden="true"></i>
-        </Link>
+        <div className="med-card-actions">
+          {showCart && (
+            <button
+              type="button"
+              onClick={() => (inCart ? removeFromCart(`m:${med.id}`) : addMedicationToCart({ ...med, image: med.image ?? null }))}
+              className={`med-cart-btn ${inCart ? "is-in-cart" : ""}`}
+              aria-label={inCart ? t("cart.inCart") : t("cart.add")}
+              title={inCart ? t("cart.inCart") : t("cart.add")}
+            >
+              <i className={`bi ${inCart ? "bi-check-lg" : "bi-cart-plus"}`} aria-hidden="true"></i>
+            </button>
+          )}
+
+          {onRemove && (
+            <button
+              type="button"
+              onClick={onRemove}
+              className="med-remove-btn"
+              aria-label={t("common.remove")}
+              title={t("common.remove")}
+            >
+              <i className="bi bi-trash" aria-hidden="true"></i>
+            </button>
+          )}
+
+          <Link href={detailHref} className="med-cta med-cta--actions">
+            {t("common.details")}
+            <i className="bi bi-arrow-right" aria-hidden="true"></i>
+          </Link>
+        </div>
       </div>
     </article>
   );

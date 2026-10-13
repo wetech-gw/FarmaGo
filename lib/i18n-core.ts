@@ -854,6 +854,81 @@ const pt = {
     "A Inspeção Farmacêutica escalou a sua farmácia para plantão. Verifique o seu horário de plantão no site.",
   "insp.dutyOffMessage":
     "A Inspeção Farmacêutica retirou a sua farmácia do plantão.",
+
+  // Scanner de receitas
+  scanReceita: "Escanear receita",
+  "scanPage.metaTitle": "Escanear Receita | FarmaGo",
+  "scanPage.metaDescription":
+    "Fotografe a sua receita médica e o FarmaGo identifica os medicamentos e as farmácias que os têm em stock.",
+  "scanPage.breadcrumb": "Escanear receita",
+  "scanPage.title": "Escanear Receita",
+  "scanPage.description":
+    "Tire uma foto da sua receita médica. Identificamos os medicamentos, mostramos o preço e as farmácias onde os pode comprar.",
+  "scan.step1": "Fotografe a receita com a câmara do telemóvel ou escolha uma imagem da galeria.",
+  "scan.step2": "A inteligência artificial lê a receita e identifica cada medicamento prescrito.",
+  "scan.step3": "Veja cada medicamento com a imagem, o preço e as farmácias que o têm disponível.",
+  "scan.captureTitle": "Foto da receita",
+  "scan.captureHint":
+    "Coloque a receita numa superfície plana, com boa luz, e fotografe-a inteira. Funciona melhor com receitas impressas.",
+  "scan.previewAlt": "Pré-visualização da receita",
+  "scan.takePhoto": "Tirar foto da receita",
+  "scan.changePhoto": "Tirar outra foto",
+  "scan.choosePhoto": "Escolher foto da galeria",
+  "scan.cameraTitle": "Câmara",
+  "scan.cameraHint": "Encaixe a receita inteira no visor e capture a foto.",
+  "scan.cameraStarting": "A abrir a câmara…",
+  "scan.cameraError":
+    "Não foi possível abrir a câmara. Autorize o acesso ao browser ou escolha uma foto da galeria.",
+  "scan.cameraCapture": "Capturar",
+  "scan.cameraFlip": "Virar câmara",
+  "scan.analyzing": "A ler a receita…",
+  "scan.retake": "Recomeçar",
+  "scan.privacyNote":
+    "A imagem é processada pela API do Google Gemini apenas para ler o texto e nunca é guardada.",
+  "scan.disclaimer":
+    "A leitura é automática e pode conter erros. Confirme sempre os medicamentos com o seu médico ou farmacêutico. O FarmaGo não substitui o aconselhamento profissional.",
+  "scan.resultsEyebrow": "Na sua receita",
+  "scan.resultsTitle": "Medicamentos da sua",
+  "scan.resultsAccent": "receita",
+  "scan.resultsDescription":
+    "Cada medicamento mostra o preço mais baixo. Abra os detalhes para ver todas as farmácias onde o pode comprar.",
+  "scan.resultsEmpty": "Ainda não analisámos nenhuma receita. Comece por tirar uma foto.",
+  "scan.noMedicines":
+    "Não identificámos medicamentos nesta imagem. Tente outra foto, com mais luz e a receita bem posicionada.",
+  "scan.notInCatalog": "Fora do catálogo",
+  "scan.notFoundTitle": "Não encontrámos estes nomes no catálogo:",
+  "scan.notFoundHint":
+    "Podem estar escritos de forma diferente na receita ou o medicamento pode ainda não estar disponível no FarmaGo.",
+  "scan.errorNoImage": "Escolha primeiro uma imagem da receita.",
+  "scan.errorGeneric": "Não foi possível analisar a receita. Tente novamente.",
+  "scan.errorRateLimited":
+    "Já fez vários scans nesta hora. Espere um pouco antes de tentar de novo.",
+  "scan.errorNotConfigured":
+    "O scanner está temporariamente indisponível. Entretanto, pode pesquisar os medicamentos no catálogo.",
+  "scan.errorRequestFailed": "O serviço de leitura de receitas não respondeu. Tente novamente.",
+  "scan.errorUnreadable":
+    "Não conseguimos ler esta imagem. Tente outra foto, com mais luz e a receita bem posicionada.",
+
+  // Carrinho de compras local (sem conta)
+  "cart.metaTitle": "Carrinho | FarmaGo",
+  "cart.metaDescription":
+    "Os medicamentos que guardou a partir das suas receitas, com preços e farmácias.",
+  "cart.breadcrumb": "Carrinho",
+  "cart.title": "O Meu Carrinho",
+  "cart.pageDescription":
+    "Todos os medicamentos que adicionou a partir das receitas que escaneou. Ficam guardados neste dispositivo para consultar mais tarde.",
+  "cart.startScan": "Escanear receita",
+  "cart.localNote":
+    "O carrinho fica guardado apenas neste telemóvel/computador (sem conta). Preços e stock são atualizados a cada visita.",
+  "cart.add": "Adicionar",
+  "cart.inCart": "No carrinho",
+  "cart.emptyTitle": "O carrinho está vazio",
+  "cart.emptyText":
+    "Escanee uma receita médica e adicione os medicamentos ao carrinho para os encontrar aqui mais tarde.",
+  "cart.share": "Partilhar",
+  "cart.shareIntro": "O meu carrinho de medicamentos no FarmaGo:",
+  "cart.clear": "Limpar carrinho",
+  "cart.estimateTotal": "Estimativa de total",
 } satisfies Record<string, Entry>;
 
 export type TKey = keyof typeof pt;
@@ -1583,6 +1658,78 @@ const en: Record<TKey, Entry> = {
     "The Pharmaceutical Inspection has assigned your pharmacy to on-duty duty. Check your on-duty schedule on the site.",
   "insp.dutyOffMessage":
     "The Pharmaceutical Inspection has removed your pharmacy from the on-duty list.",
+
+  scanReceita: "Scan prescription",
+  "scanPage.metaTitle": "Scan Prescription | FarmaGo",
+  "scanPage.metaDescription":
+    "Photograph your medical prescription and FarmaGo identifies the medications and the pharmacies that have them in stock.",
+  "scanPage.breadcrumb": "Scan prescription",
+  "scanPage.title": "Scan Your Prescription",
+  "scanPage.description":
+    "Take a photo of your medical prescription. We identify the medications and show the price and the pharmacies where you can buy them.",
+  "scan.step1": "Photograph the prescription with your phone camera or pick an image from the gallery.",
+  "scan.step2": "Artificial intelligence reads the prescription and identifies every prescribed medication.",
+  "scan.step3": "See each medication with its image, price and the pharmacies that have it available.",
+  "scan.captureTitle": "Prescription photo",
+  "scan.captureHint":
+    "Place the prescription on a flat surface, in good light, and photograph it whole. It works best with printed prescriptions.",
+  "scan.previewAlt": "Prescription preview",
+  "scan.takePhoto": "Take photo of the prescription",
+  "scan.changePhoto": "Take another photo",
+  "scan.choosePhoto": "Choose photo from gallery",
+  "scan.cameraTitle": "Camera",
+  "scan.cameraHint": "Fit the whole prescription in the viewfinder, then take the photo.",
+  "scan.cameraStarting": "Opening the camera…",
+  "scan.cameraError":
+    "The camera could not be opened. Allow browser access or choose a photo from the gallery.",
+  "scan.cameraCapture": "Take photo",
+  "scan.cameraFlip": "Flip camera",
+  "scan.analyzing": "Reading the prescription…",
+  "scan.retake": "Start over",
+  "scan.privacyNote":
+    "The image is processed by the Google Gemini API only to read its text and is never stored.",
+  "scan.disclaimer":
+    "The reading is automatic and may contain mistakes. Always confirm medications with your doctor or pharmacist. FarmaGo does not replace professional advice.",
+  "scan.resultsEyebrow": "On your prescription",
+  "scan.resultsTitle": "Medications on your",
+  "scan.resultsAccent": "prescription",
+  "scan.resultsDescription":
+    "Each medication shows the lowest price. Open the details to see every pharmacy where you can buy it.",
+  "scan.resultsEmpty": "No prescription analysed yet. Start by taking a photo.",
+  "scan.noMedicines":
+    "We did not identify any medications in this image. Try another photo, with more light and the prescription well positioned.",
+  "scan.notInCatalog": "Not in catalog",
+  "scan.notFoundTitle": "We could not find these names in the catalog:",
+  "scan.notFoundHint":
+    "They may be written differently on the prescription, or the medication may not be available on FarmaGo yet.",
+  "scan.errorNoImage": "Choose an image of the prescription first.",
+  "scan.errorGeneric": "The prescription could not be analysed. Please try again.",
+  "scan.errorRateLimited": "You have already scanned several times this hour. Wait a while before trying again.",
+  "scan.errorNotConfigured":
+    "The scanner is temporarily unavailable. Meanwhile, you can search medications in the catalog.",
+  "scan.errorRequestFailed": "The prescription reading service did not respond. Please try again.",
+  "scan.errorUnreadable":
+    "We could not read this image. Try another photo, with more light and the prescription well positioned.",
+
+  "cart.metaTitle": "Cart | FarmaGo",
+  "cart.metaDescription":
+    "The medications you saved from your prescriptions, with prices and pharmacies.",
+  "cart.breadcrumb": "Cart",
+  "cart.title": "My Cart",
+  "cart.pageDescription":
+    "Every medication you added from the prescriptions you scanned. They stay saved on this device so you can check them later.",
+  "cart.startScan": "Scan prescription",
+  "cart.localNote":
+    "The cart is only saved on this phone/computer (no account). Prices and stock are refreshed on every visit.",
+  "cart.add": "Add",
+  "cart.inCart": "In cart",
+  "cart.emptyTitle": "Your cart is empty",
+  "cart.emptyText":
+    "Scan a medical prescription and add medications to the cart to find them here later.",
+  "cart.share": "Share",
+  "cart.shareIntro": "My medication cart on FarmaGo:",
+  "cart.clear": "Clear cart",
+  "cart.estimateTotal": "Estimated total",
 };
 
 const fr: Record<TKey, Entry> = {
@@ -2312,6 +2459,79 @@ const fr: Record<TKey, Entry> = {
     "L'Inspection pharmaceutique a placé votre pharmacie en garde. Consultez vos horaires de garde sur le site.",
   "insp.dutyOffMessage":
     "L'Inspection pharmaceutique a retiré votre pharmacie de la liste des gardes.",
+
+  scanReceita: "Scanner une ordonnance",
+  "scanPage.metaTitle": "Scanner une ordonnance | FarmaGo",
+  "scanPage.metaDescription":
+    "Photographiez votre ordonnance médicale et FarmaGo identifie les médicaments et les pharmacies qui les ont en stock.",
+  "scanPage.breadcrumb": "Scanner une ordonnance",
+  "scanPage.title": "Scanner votre ordonnance",
+  "scanPage.description":
+    "Prenez une photo de votre ordonnance médicale. Nous identifions les médicaments et affichons le prix et les pharmacies où les acheter.",
+  "scan.step1": "Photographiez l'ordonnance avec l'appareil photo ou choisissez une image de la galerie.",
+  "scan.step2": "L'intelligence artificielle lit l'ordonnance et identifie chaque médicament prescrit.",
+  "scan.step3": "Voyez chaque médicament avec son image, son prix et les pharmacies qui l'ont disponible.",
+  "scan.captureTitle": "Photo de l'ordonnance",
+  "scan.captureHint":
+    "Posez l'ordonnance sur une surface plane, avec une bonne lumière, et photographiez-la entièrement. Le résultat est meilleur avec les ordonnances imprimées.",
+  "scan.previewAlt": "Aperçu de l'ordonnance",
+  "scan.takePhoto": "Prendre une photo de l'ordonnance",
+  "scan.changePhoto": "Prendre une autre photo",
+  "scan.choosePhoto": "Choisir une photo de la galerie",
+  "scan.cameraTitle": "Appareil photo",
+  "scan.cameraHint": "Cadrez toute l'ordonnance dans le viseur, puis prenez la photo.",
+  "scan.cameraStarting": "Ouverture de l'appareil photo…",
+  "scan.cameraError":
+    "Impossible d'ouvrir l'appareil photo. Autorisez l'accès du navigateur ou choisissez une photo dans la galerie.",
+  "scan.cameraCapture": "Prendre la photo",
+  "scan.cameraFlip": "Changer de caméra",
+  "scan.analyzing": "Lecture de l'ordonnance…",
+  "scan.retake": "Recommencer",
+  "scan.privacyNote":
+    "L'image est traitée par l'API Google Gemini uniquement pour lire son texte et n'est jamais conservée.",
+  "scan.disclaimer":
+    "La lecture est automatique et peut contenir des erreurs. Confirmez toujours les médicaments avec votre médecin ou pharmacien. FarmaGo ne remplace pas le conseil professionnel.",
+  "scan.resultsEyebrow": "Sur votre ordonnance",
+  "scan.resultsTitle": "Les médicaments de votre",
+  "scan.resultsAccent": "ordonnance",
+  "scan.resultsDescription":
+    "Chaque médicament affiche le prix le plus bas. Ouvrez les détails pour voir toutes les pharmacies où l'acheter.",
+  "scan.resultsEmpty": "Aucune ordonnance analysée pour le moment. Commencez par prendre une photo.",
+  "scan.noMedicines":
+    "Nous n'avons identifié aucun médicament sur cette image. Essayez une autre photo, avec plus de lumière et l'ordonnance bien positionnée.",
+  "scan.notInCatalog": "Hors catalogue",
+  "scan.notFoundTitle": "Nous n'avons pas trouvé ces noms dans le catalogue :",
+  "scan.notFoundHint":
+    "Ils peuvent être écrits différemment sur l'ordonnance, ou le médicament peut ne pas encore être disponible sur FarmaGo.",
+  "scan.errorNoImage": "Choisissez d'abord une image de l'ordonnance.",
+  "scan.errorGeneric": "L'ordonnance n'a pas pu être analysée. Veuillez réessayer.",
+  "scan.errorRateLimited":
+    "Vous avez déjà scanné plusieurs fois cette heure. Attendez un peu avant de réessayer.",
+  "scan.errorNotConfigured":
+    "Le scanner est temporairement indisponible. En attendant, vous pouvez rechercher les médicaments dans le catalogue.",
+  "scan.errorRequestFailed": "Le service de lecture d'ordonnances n'a pas répondu. Veuillez réessayer.",
+  "scan.errorUnreadable":
+    "Nous n'avons pas pu lire cette image. Essayez une autre photo, avec plus de lumière et l'ordonnance bien positionnée.",
+
+  "cart.metaTitle": "Panier | FarmaGo",
+  "cart.metaDescription":
+    "Les médicaments que vous avez enregistrés à partir de vos ordonnances, avec les prix et les pharmacies.",
+  "cart.breadcrumb": "Panier",
+  "cart.title": "Mon panier",
+  "cart.pageDescription":
+    "Tous les médicaments ajoutés à partir des ordonnances que vous avez scannées. Ils restent enregistrés sur cet appareil pour les consulter plus tard.",
+  "cart.startScan": "Scanner une ordonnance",
+  "cart.localNote":
+    "Le panier est enregistré uniquement sur ce téléphone/cet ordinateur (sans compte). Les prix et le stock sont actualisés à chaque visite.",
+  "cart.add": "Ajouter",
+  "cart.inCart": "Dans le panier",
+  "cart.emptyTitle": "Votre panier est vide",
+  "cart.emptyText":
+    "Scannez une ordonnance médicale et ajoutez les médicaments au panier pour les retrouver ici plus tard.",
+  "cart.share": "Partager",
+  "cart.shareIntro": "Mon panier de médicaments sur FarmaGo :",
+  "cart.clear": "Vider le panier",
+  "cart.estimateTotal": "Total estimé",
 };
 
 export const dictionaries: Record<Locale, Record<TKey, Entry>> = { pt, en, fr };

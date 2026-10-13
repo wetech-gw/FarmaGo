@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getT } from "@/lib/i18n";
 import NavbarCollapse from "@/components/NavbarCollapse";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import CartButton from "@/components/CartButton";
 
 export default async function Navbar() {
   const user = await getCurrentUser();
@@ -46,6 +47,8 @@ export default async function Navbar() {
                 </Link>
 
                 <LocaleSwitcher />
+
+                <CartButton />
 
                 {/* Conta: dashboard se houver sessão, login/registo caso contrário */}
                 {user ? (
@@ -97,6 +100,12 @@ export default async function Navbar() {
               <li className="nav-item">
                 <Link href="/medications" className="nav-link text-dark fw-semibold small text-uppercase tracking-wider p-0">
                   ● {t("medications")}
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link href="/scan-receita" className="nav-link text-success fw-semibold small text-uppercase tracking-wider p-0">
+                  ● {t("scanReceita")}
                 </Link>
               </li>
 
