@@ -6,13 +6,45 @@ import { useT } from "@/components/I18nProvider";
 import { useCart } from "@/lib/cart";
 import type { TKey } from "@/lib/i18n-core";
 
-const dockItems: { href: string; icon: string; labelKey: TKey }[] = [
-  { href: "/", icon: "bi-house", labelKey: "home" },
-  { href: "/medications", icon: "bi-capsule", labelKey: "medications" },
-  { href: "/scan-receita", icon: "bi-upc-scan", labelKey: "scanReceita" },
-  { href: "/pharmacies", icon: "bi-geo-alt", labelKey: "pharmacies" },
-  { href: "/guards", icon: "bi-shield-plus", labelKey: "guard" },
-  { href: "/carrinho", icon: "bi-cart3", labelKey: "cart.title" },
+type DockItem = {
+  href: string;
+  icon: string;
+  activeIcon: string;
+  labelKey: TKey;
+};
+
+const dockItems: DockItem[] = [
+  { href: "/", icon: "bi-house", activeIcon: "bi-house-fill", labelKey: "home" },
+  {
+    href: "/medications",
+    icon: "bi-capsule",
+    activeIcon: "bi-capsule-pill",
+    labelKey: "dock.medications",
+  },
+  {
+    href: "/scan-receita",
+    icon: "bi-upc-scan",
+    activeIcon: "bi-upc-scan",
+    labelKey: "dock.scan",
+  },
+  {
+    href: "/pharmacies",
+    icon: "bi-geo-alt",
+    activeIcon: "bi-geo-alt-fill",
+    labelKey: "pharmacies",
+  },
+  {
+    href: "/guards",
+    icon: "bi-shield-plus",
+    activeIcon: "bi-shield-fill-plus",
+    labelKey: "guard",
+  },
+  {
+    href: "/carrinho",
+    icon: "bi-cart3",
+    activeIcon: "bi-cart-fill",
+    labelKey: "dock.cart",
+  },
 ];
 
 export default function MobileDock() {
@@ -36,10 +68,18 @@ export default function MobileDock() {
               aria-current={isActive ? "page" : undefined}
               aria-label={t(item.labelKey)}
             >
-              <i className={`bi ${item.icon}`} aria-hidden="true"></i>
-              {item.href === "/carrinho" && count > 0 && (
-                <span className="mobile-dock-badge">{count > 99 ? "99+" : count}</span>
-              )}
+              <span className="mobile-dock-icon">
+                <i
+                  className={`bi ${isActive ? item.activeIcon : item.icon}`}
+                  aria-hidden="true"
+                ></i>
+                {item.href === "/carrinho" && count > 0 && (
+                  <span className="mobile-dock-badge" aria-hidden="true">
+                    {count > 99 ? "99+" : count}
+                  </span>
+                )}
+              </span>
+              <span className="mobile-dock-label">{t(item.labelKey)}</span>
             </Link>
           );
         })}

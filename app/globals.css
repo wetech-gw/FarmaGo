@@ -2003,27 +2003,27 @@ body {
   }
 }
 
+/* Dock de navegação mobile — barra fixa de largura total, com ícones e
+   rótulos sempre visíveis. No Android segue o Material 3 (indicador em
+   pílula); no iOS imita a tab bar translúcida do WhatsApp. */
 .mobile-dock {
   position: fixed;
-  bottom: calc(0.75rem + env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%);
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 1050;
-  padding: 0.5rem;
-  width: calc(100% - 2rem);
-  max-width: 420px;
-  border-radius: 2rem;
+  padding-bottom: env(safe-area-inset-bottom);
   background: #ffffff;
-  border: 1px solid var(--px-line);
-  box-shadow: 0 12px 32px -8px rgba(16, 24, 40, 0.25);
-  transition: transform 0.3s ease;
+  border-top: 1px solid var(--px-line);
+  box-shadow: 0 -6px 20px -14px rgba(16, 24, 40, 0.35);
 }
 
 .mobile-dock-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  max-width: 480px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: stretch;
+  max-width: 640px;
+  height: 68px;
   margin: 0 auto;
 }
 
@@ -2032,23 +2032,41 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  gap: 0;
-  padding: 0.5rem 0.6rem;
-  border-radius: 0.85rem;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 2px 8px;
   color: var(--px-muted);
   text-decoration: none;
-  font-size: 0.65rem;
-  font-weight: 600;
-  transition: color 0.2s ease, background 0.2s ease;
-  min-width: 46px;
+  font-size: clamp(0.55rem, 2.6vw, 0.65rem);
+  font-weight: 500;
+  line-height: 1.1;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.18s ease;
+}
+
+.mobile-dock-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 30px;
+  border-radius: 999px;
+  transition: background-color 0.22s ease;
+}
+
+.mobile-dock-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Contador vermelho do carrinho, por cima do ícone. */
 .mobile-dock-badge {
   position: absolute;
-  top: 0.1rem;
-  right: 0.2rem;
+  top: -2px;
+  right: 4px;
   background: #dc3545;
   color: #fff;
   border-radius: 999px;
@@ -2061,21 +2079,30 @@ body {
 }
 
 .mobile-dock-item i {
-  font-size: 1.5rem;
-  transition: transform 0.2s ease;
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: transform 0.22s ease;
 }
 
 .mobile-dock-item.is-active {
   color: var(--px-green-dark);
+  font-weight: 700;
+}
+
+.mobile-dock-item.is-active .mobile-dock-icon {
   background: var(--px-green-soft);
 }
 
 .mobile-dock-item.is-active i {
-  transform: scale(1.1);
+  transform: scale(1.04);
 }
 
-.mobile-dock-item:active {
-  background: #f0f0f0;
+.mobile-dock-item:active .mobile-dock-icon {
+  background: #eef1ef;
+}
+
+.mobile-dock-item.is-active:active .mobile-dock-icon {
+  background: #dff3e6;
 }
 
 @media (min-width: 992px) {
@@ -2086,7 +2113,58 @@ body {
 
 @media (max-width: 991.98px) {
   body {
-    padding-bottom: 96px;
+    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+  }
+}
+
+/* iOS: tab bar translúcida com blur, como no WhatsApp. */
+@supports (-webkit-touch-callout: none) {
+  .mobile-dock {
+    background: rgba(250, 250, 250, 0.84);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-top: 0.5px solid rgba(16, 24, 40, 0.14);
+    box-shadow: none;
+  }
+
+  .mobile-dock-inner {
+    height: 50px;
+  }
+
+  .mobile-dock-item {
+    gap: 1px;
+    padding: 4px 2px 2px;
+    font-size: clamp(0.55rem, 2.6vw, 0.65rem);
+  }
+
+  .mobile-dock-icon {
+    width: 44px;
+    height: 26px;
+  }
+
+  .mobile-dock-item i {
+    font-size: 1.45rem;
+  }
+
+  .mobile-dock-item.is-active .mobile-dock-icon,
+  .mobile-dock-item:active .mobile-dock-icon,
+  .mobile-dock-item.is-active:active .mobile-dock-icon {
+    background: transparent;
+  }
+
+  .mobile-dock-item.is-active i {
+    transform: none;
+  }
+
+  .mobile-dock-badge {
+    top: -4px;
+    right: 0;
+  }
+
+  @media (max-width: 991.98px) {
+    body {
+      padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    }
   }
 }
 
@@ -2262,10 +2340,10 @@ body {
 }
 
 @media (max-width: 991.98px) {
-  /* Acima do dock de navegação, que tem ~96px de altura em mobile. */
+  /* Acima da barra de navegação inferior. */
   .pwa-install-fab-wrap,
   .pwa-whatsapp-fab {
-    bottom: calc(108px + env(safe-area-inset-bottom));
+    bottom: calc(84px + env(safe-area-inset-bottom));
   }
 
   .pwa-install-fab-wrap {
@@ -2282,6 +2360,16 @@ body {
     width: 48px;
     height: 48px;
     font-size: 1.45rem;
+  }
+}
+
+/* iOS: a tab bar é mais baixa, os botões flutuantes sobem menos. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 991.98px) {
+    .pwa-install-fab-wrap,
+    .pwa-whatsapp-fab {
+      bottom: calc(64px + env(safe-area-inset-bottom));
+    }
   }
 }
 
