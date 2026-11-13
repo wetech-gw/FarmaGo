@@ -1,3 +1,14 @@
+# FarmaGo
+
+Consulte o [guia de publicação na Hostinger e GitHub](DEPLOYMENT.md) para gerar
+o ZIP, autenticar no GitHub, fazer push e resolver erros de implantação.
+
+```powershell
+npm run build:hostinger
+```
+
+O comando gera `hostinger-deploy.zip` para upload manual na Hostinger.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
