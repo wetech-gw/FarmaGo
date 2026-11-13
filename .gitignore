@@ -40,4 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Local deployment archives
+/hostinger-deploy*.zip
+
 /app/generated/prisma
